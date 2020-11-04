@@ -2,19 +2,29 @@ public class Tile {
     /*
     Colour of tiles:
         f = grey fog-of-war
-        b = water
-        g = green ship - Destroyer
-        p = purple ship - Submarine
-        r = red ship - Battleship
-        y = yellow ship - Carrier
+        w = water
+        d = green ship - Destroyer; length 2
+        s = purple ship - Submarine; length 3
+        b = red ship - Battleship; length 4
+        c = yellow ship - Carrier; length 5
     */
-    private char tileColour = 'f';
+    private char type;
+    private int[] location;
 
-    public char getTileColour() {
-        return tileColour;
+    public Tile(char typ, int[] loc){
+        type = typ;
+        location = loc;
     }
 
-    public void setTileColour(char tileColour) {
-        this.tileColour = tileColour;
+    public char getTileType() {
+        return type;
+    }
+
+    public void setTile(char tle) {
+        this.type = tle;
+    }
+
+    public int[] getLocation() {
+        return location;
     }
 }
