@@ -4,8 +4,8 @@ import java.io.FileNotFoundException;  // File error handling class
 import java.util.Scanner;  // Text scanner class
 import java.util.Random;  // Random number generation class
 
-public class Main {
-
+public class GameManager {
+    // DONE Board size
     // TODO Implement random ship placement
     // TODO Implement different board sizes
     // TODO Implement scoring system x2 (different scales)
@@ -13,12 +13,11 @@ public class Main {
     // TODO Implement GUI
 
     public static void main(String[] args) {
-        int[] boardSize = {8,8};  // Board size in the form: [boardSize x boardSize]
+        int[] boardSize = {8,8};  // Board size in the form: [numberRows x numberColumns]
         Board boardPlayer1 = new Board(boardSize,true);
-        System.out.println("Player 1 Board:");
-        System.out.println(boardPlayer1.showBoard());
         boardPlayer1.placeShipsRandomly();
-
+        System.out.println("Player 1 Board:");
+        boardPlayer1.showShipPlacement();
     }
 
     /*
