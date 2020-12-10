@@ -128,8 +128,11 @@ public class Board {
          Reads in ship coordinates from the provided game text files.
          @param filename = file read from
          @return None
-         @throws ErrorsInShipPlacement: Out of board bounds, Overlapping ships, too few ships, too many ships
-                 ErrorsInShipNaming
+         @throws ErrorsInShipPlacement: (1) Out of board bounds, (2) Overlapping ships, (3) too few ships,
+                                        (4) too many ships, (5) too few coordinates specified for ship,
+                                        (6) too many coordinates specified for ship
+                 (7) ErrorsInShipNaming
+                 (8) NumberFormatException : inputting letters instead of numbers for ship coordinates.
          */
 
         ArrayList<Ship> placedShips = new ArrayList<Ship>();
@@ -146,10 +149,8 @@ public class Board {
                 String line = scan.nextLine();
                 if (lineNum > 0) {
                     String[] lineElements = line.split("\\;");
-                    System.out.println("Line = " + line);
                     // Loop through each segment in the current line.
                     for (int lineIndex = 0; lineIndex < lineElements.length; lineIndex++) {
-                        System.out.println("Line element = " + lineElements[lineIndex]);
                         lineElements[lineIndex] = lineElements[lineIndex].strip();
                         // Init ship coordinates. 
                         if (lineIndex == 0){
@@ -168,15 +169,22 @@ public class Board {
                                     coordinates = new int[ships[0].getShipLength()][2];
                                     break;
                                 default:
-                                    System.out.println("Ship possibly spelled incorrectly.");
                                     System.out.println("Error in setting a ship from the gameSettings text file!");
+                                    System.out.println("Ship possibly spelled incorrectly.");
                                     System.exit(0);
                             }
                         }else{ // read in ship coordinates
                             String[] coordElements = lineElements[lineIndex].split("\\*");
-                            int x = Integer.parseInt(coordElements[0])-1;
-                            int y = Integer.parseInt(coordElements[1])-1;
-                            coordinates[lineIndex-1] = new int[] {x,y};
+                            try {
+                                int x = Integer.parseInt(coordElements[0]) - 1;
+                                int y = Integer.parseInt(coordElements[1]) - 1;
+                                coordinates[lineIndex-1] = new int[] {x,y};
+                            }catch(NumberFormatException numberFormatException){
+                                System.out.println("Error placing the " + shipType + " ship!");
+                                System.out.println("Coordinates have to be numbers seperated with a star.");
+                                numberFormatException.printStackTrace();
+                            }
+
                         }
                     }
                     // Check if valid ship placement
@@ -184,18 +192,54 @@ public class Board {
                     if (isValid == true) {
                         switch (shipType) {
                             case "carrier":
+                                if (coordinates.length > ships[3].getShipLength()){
+                                    System.out.println("Too many coordinates specified for the" + shipType);
+                                    System.out.println("Please edit the ship placement definition txt.");
+                                    System.exit(0);
+                                }else if(coordinates.length < ships[3].getShipLength()){
+                                    System.out.println("Too few coordinates specified for the" + shipType);
+                                    System.out.println("Please edit the ship placement definition txt.");
+                                    System.exit(0);
+                                }
                                 this.ships[3].setShipCoordinates(coordinates);
                                 placedShips.add(this.ships[3]);
                                 break;
                             case "battleship":
+                                if (coordinates.length > ships[2].getShipLength()){
+                                    System.out.println("Too many coordinates specified for the" + shipType);
+                                    System.out.println("Please edit the ship placement definition txt.");
+                                    System.exit(0);
+                                }else if(coordinates.length < ships[2].getShipLength()){
+                                    System.out.println("Too few coordinates specified for the" + shipType);
+                                    System.out.println("Please edit the ship placement definition txt.");
+                                    System.exit(0);
+                                }
                                 this.ships[2].setShipCoordinates(coordinates);
                                 placedShips.add(this.ships[2]);
                                 break;
                             case "submarine":
+                                if (coordinates.length > ships[1].getShipLength()){
+                                    System.out.println("Too many coordinates specified for the" + shipType);
+                                    System.out.println("Please edit the ship placement definition txt.");
+                                    System.exit(0);
+                                }else if(coordinates.length < ships[1].getShipLength()){
+                                    System.out.println("Too few coordinates specified for the" + shipType);
+                                    System.out.println("Please edit the ship placement definition txt.");
+                                    System.exit(0);
+                                }
                                 this.ships[1].setShipCoordinates(coordinates);
                                 placedShips.add(this.ships[1]);
                                 break;
                             case "destroyer":
+                                if (coordinates.length > ships[0].getShipLength()){
+                                    System.out.println("Too many coordinates specified for the" + shipType);
+                                    System.out.println("Please edit the ship placement definition txt.");
+                                    System.exit(0);
+                                }else if(coordinates.length < ships[0].getShipLength()){
+                                    System.out.println("Too few coordinates specified for the" + shipType);
+                                    System.out.println("Please edit the ship placement definition txt.");
+                                    System.exit(0);
+                                }
                                 this.ships[0].setShipCoordinates(coordinates);
                                 placedShips.add(this.ships[0]);
                                 break;
@@ -259,7 +303,7 @@ public class Board {
         /**
          Shows a text-based representation of the board with locations of the ships.
          @param None
-         @return boardText: String containing the ship locations. 
+         @return boardText: String containing the ship locations.
          @throws None
          */
         String boardText = "";
