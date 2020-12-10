@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.HashMap;
+import java.lang.Math;
 
 
 public class Board {
@@ -67,6 +68,7 @@ public class Board {
          Checks if a ship placement is valid:
             1)Checks if ship is placed on the board
             2)Checks if ship placements overlap
+            3)Checks if ship placements are disjoint (a ship is not continuous)
          @param coords: Current ship coordinates to be placed
                 placedShips: Ships already placed on board
          @return isValid: Whether or not placement was valid.
@@ -94,6 +96,16 @@ public class Board {
                 }
             }
         }
+
+        // Check if ship forms a line (for file inputted ships):
+        for (int i=0; i<coords.length-1; i++){
+            int[] currLoc = coords[i];
+            int[] nextLoc = coords[i+1];
+            if ((Math.abs(currLoc[0] - nextLoc[0]) != 1 | Math.abs(currLoc[1] - nextLoc[1]) != 1) == false){
+                return isValid = false;
+            }
+        }
+
         return isValid;
     }
 
@@ -130,9 +142,9 @@ public class Board {
          @return None
          @throws ErrorsInShipPlacement: (1) Out of board bounds, (2) Overlapping ships, (3) too few ships,
                                         (4) too many ships, (5) too few coordinates specified for ship,
-                                        (6) too many coordinates specified for ship
-                 (7) ErrorsInShipNaming
-                 (8) NumberFormatException : inputting letters instead of numbers for ship coordinates.
+                                        (6) too many coordinates specified for ship, (7) ships are not continuous
+                 (8) ErrorsInShipNaming
+                 (9) NumberFormatException : inputting letters instead of numbers for ship coordinates.
          */
 
         ArrayList<Ship> placedShips = new ArrayList<Ship>();
@@ -247,6 +259,9 @@ public class Board {
                         }
                     }else{
                         System.out.println("Invalid placement of ships. Please edit the ship placement definition txt.");
+                        System.out.println("Possible causes:\n" +"(1) Ship off of board\n"
+                                                                +"(2) Ship placed on another ship\n"
+                                                                +"(3) Ship is not continuous.");
                         System.exit(0);
                     }
 
