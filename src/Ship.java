@@ -4,12 +4,12 @@ public class Ship {
 
     private int[][] SHIP_COORDINATES;
     private final int SHIP_POINTS;
-    private final char SHIP_TYPE;
+    private final String SHIP_TYPE;
     private final int SHIP_LENGTH;
     private int hitCount;
 
     // Ship class constructor
-    public Ship (int pnts, int length, char type, int[][]shipCoords) {
+    public Ship (int pnts, int length, String type, int[][]shipCoords) {
         this.SHIP_POINTS = pnts;
         this.SHIP_TYPE = type;
         this.SHIP_COORDINATES = shipCoords;
@@ -33,8 +33,13 @@ public class Ship {
         return this.SHIP_POINTS;
     }
 
-    public char getShipType() {
+    public String getShipType() {
         return this.SHIP_TYPE;
+    }
+
+    public char getShipSymbol() {
+        char shipSymbol = this.SHIP_TYPE.toLowerCase().charAt(0);
+        return shipSymbol;
     }
 
     public int getShipLength(){

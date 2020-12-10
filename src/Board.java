@@ -1,21 +1,21 @@
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Random;
 import java.util.ArrayList;
-import java.io.File;  // File reading class
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FileNotFoundException;  // File error handling class
-import java.util.Scanner;  // Text scanner class
+import java.util.Scanner;
+import java.util.HashMap;
+
 
 public class Board {
 
-    private final int[] BOARD_SIZE;  // e.g. BOARD_SIZE = {8,8}
+    private int[] BOARD_SIZE;  // e.g. BOARD_SIZE = {8,8}
     private Tile[][] board;
     private Ship[] ships = new Ship[4];
 
 
-    public Board(int[] brdSze, Boolean strtPlayer) {
-        BOARD_SIZE = brdSze;
-
+    public Board(int[] brdSize) {
+        BOARD_SIZE = brdSize;
         // Initialise board's individual tiles
         board = new Tile[BOARD_SIZE[0]][BOARD_SIZE[1]];
         for (int i=0; i<BOARD_SIZE[0]; i++) {
@@ -24,14 +24,19 @@ public class Board {
             }
         }
         // Initialise ships
-        ships[0] = new Ship(1, 2, 'd', null);
-        ships[1] = new Ship(2, 3, 's', null);
-        ships[2] = new Ship(3, 4, 'b', null);
-        ships[3] = new Ship(4, 5, 'c', null);
+        ships[0] = new Ship(1, 2, "Destroyer", null);
+        ships[1] = new Ship(2, 3, "Submarine", null);
+        ships[2] = new Ship(3, 4, "Battleship", null);
+        ships[3] = new Ship(4, 5, "Carrier", null);
     }
 
     private int[][] generateShipCoordinates(Ship currentShip){
-    // Generates coordinates for a ship's random placement
+        /**
+         Generates random ship coordinates.
+         @param currentShip: Ship who's coordinates are being generated
+         @return shipCoords: Ship's generated coordiantes.
+         @throws None
+         */
 
         Random randValue = new Random();
         int[] shipLocation;
@@ -58,7 +63,15 @@ public class Board {
     }
 
     private boolean isValidShipPlacement(int[][] coords, ArrayList<Ship> placedShips){
-    // Checks if the ship placement is out of bounds.
+        /**
+         Checks if a ship placement is valid:
+            1)Checks if ship is placed on the board
+            2)Checks if ship placements overlap
+         @param coords: Current ship coordinates to be placed
+                placedShips: Ships already placed on board
+         @return isValid: Whether or not placement was valid.
+         @throws None
+         */
         boolean isValid = true;
         // Check if ship is out board's bounds:
         for (int[] i : coords){
@@ -85,6 +98,12 @@ public class Board {
     }
 
     public void placeShipsRandomly(){
+        /**
+         Places ships randomly on the board.
+         @param None
+         @return None
+         @throws None
+         */
         ArrayList<Ship> placedShips = new ArrayList<Ship>();
         // Place each of the different ships:
         for (int i=0; i<4; i++) {  // Loop through each type of ship
@@ -101,25 +120,130 @@ public class Board {
                 }
             }
         }
+        this.setShipPlacement();
     }
 
-    public void placeShipsFromFile(){
-        /*
-        File format:
-        8
-        Carrier;3*2;3*3;3*4;3*5;3*6
-        Battleship;5*6;6*6;7*6;8*6
-        Submarine;5*2;6*2;7*2;
-        Destroyer;1*7;1*8
-
-        Error Catching:
-        -overlapping ships
-        -tile coordinates and board dimension specifications that are inconsistent
-        -incorrect ships names
-        -too few or too many ships
+    public void readShipPlacementFile(String filename){
+        /**
+         Reads in ship coordinates from the provided game text files.
+         @param filename = file read from
+         @return None
+         @throws ErrorsInShipPlacement: Out of board bounds, Overlapping ships, too few ships, too many ships
+                 ErrorsInShipNaming
          */
 
+        ArrayList<Ship> placedShips = new ArrayList<Ship>();
+        int[][] coordinates = null;
+        String shipType = null;
+        try(
+                FileReader file = new FileReader(filename);
+                Scanner scan = new Scanner(file);
+        ){
+            scan.useDelimiter(";");
+            int lineNum = 0;
+            // Loop through each line of file:
+            while (scan.hasNext()) {
+                String line = scan.nextLine();
+                if (lineNum > 0) {
+                    String[] lineElements = line.split("\\;");
+                    System.out.println("Line = " + line);
+                    // Loop through each segment in the current line.
+                    for (int lineIndex = 0; lineIndex < lineElements.length; lineIndex++) {
+                        System.out.println("Line element = " + lineElements[lineIndex]);
+                        lineElements[lineIndex] = lineElements[lineIndex].strip();
+                        // Init ship coordinates. 
+                        if (lineIndex == 0){
+                            shipType = lineElements[lineIndex].toLowerCase();
+                            switch(shipType) {
+                                case "carrier":
+                                    coordinates = new int[ships[3].getShipLength()][2];
+                                    break;
+                                case "battleship":
+                                    coordinates = new int[ships[2].getShipLength()][2];
+                                    break;
+                                case "submarine":
+                                    coordinates = new int[ships[1].getShipLength()][2];
+                                    break;
+                                case "destroyer":
+                                    coordinates = new int[ships[0].getShipLength()][2];
+                                    break;
+                                default:
+                                    System.out.println("Ship possibly spelled incorrectly.");
+                                    System.out.println("Error in setting a ship from the gameSettings text file!");
+                                    System.exit(0);
+                            }
+                        }else{ // read in ship coordinates
+                            String[] coordElements = lineElements[lineIndex].split("\\*");
+                            int x = Integer.parseInt(coordElements[0])-1;
+                            int y = Integer.parseInt(coordElements[1])-1;
+                            coordinates[lineIndex-1] = new int[] {x,y};
+                        }
+                    }
+                    // Check if valid ship placement
+                    boolean isValid = isValidShipPlacement(coordinates, placedShips);
+                    if (isValid == true) {
+                        switch (shipType) {
+                            case "carrier":
+                                this.ships[3].setShipCoordinates(coordinates);
+                                placedShips.add(this.ships[3]);
+                                break;
+                            case "battleship":
+                                this.ships[2].setShipCoordinates(coordinates);
+                                placedShips.add(this.ships[2]);
+                                break;
+                            case "submarine":
+                                this.ships[1].setShipCoordinates(coordinates);
+                                placedShips.add(this.ships[1]);
+                                break;
+                            case "destroyer":
+                                this.ships[0].setShipCoordinates(coordinates);
+                                placedShips.add(this.ships[0]);
+                                break;
+                            default:
+                        }
+                    }else{
+                        System.out.println("Invalid placement of ships. Please edit the ship placement definition txt.");
+                        System.exit(0);
+                    }
 
+                }
+                lineNum = lineNum + 1;
+            }
+            // Final checks on the numbers of ships defined:
+            if (lineNum < 5){
+                System.out.println("Invalid placement of ships. Too few ships defined!");
+                System.exit(0);
+            }else if(lineNum > 5){
+                System.out.println("Invalid placement of ships. Too many ships defined!");
+                System.exit(0);
+            }else {  // if all check passed
+                this.setShipPlacement();
+            }
+
+        } catch(FileNotFoundException fileNotFoundException){
+            fileNotFoundException.printStackTrace();
+        } catch(IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+    public void setShipPlacement() {
+        /**
+         Sets all the ship locations on the board's tiles.
+         @param None
+         @return None
+         @throws None
+         */
+        for (Ship ship : this.ships){
+            for (int[] coordPair : ship.getShipCoordinates()){
+                int x = coordPair[0];
+                int y = coordPair[1];
+                if (x == 8 | y ==8){
+                    System.out.println("hello");
+                }
+                board[x][y].setTile(ship.getShipSymbol());
+            }
+        }
     }
 
     public int[] getBOARD_SIZE() {
@@ -130,21 +254,14 @@ public class Board {
         return ships;
     }
 
-    public void showShipPlacement() {
-        for (Ship ship : this.ships){
-            for (int[] coordPair : ship.getShipCoordinates()){
-                int x = coordPair[0];
-                int y = coordPair[1];
-                if (x == 8 | y ==8){
-                    System.out.println("hello");
-                }
-                board[x][y].setTile(ship.getShipType());
-            }
-        }
-        System.out.println(this.showBoard());
-    }
 
     public String showBoard(){
+        /**
+         Shows a text-based representation of the board with locations of the ships.
+         @param None
+         @return boardText: String containing the ship locations. 
+         @throws None
+         */
         String boardText = "";
         for (int i=0; i<BOARD_SIZE[0]; i++) {
             for (int j = 0; j < BOARD_SIZE[1]; j++) {
