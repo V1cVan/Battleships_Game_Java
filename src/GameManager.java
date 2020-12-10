@@ -1,15 +1,12 @@
 // Import packages:
-import java.io.File;  // File reading class
-import java.io.FileNotFoundException;  // File error handling class
-import java.util.Scanner;  // Text scanner class
-import java.util.Random;  // Random number generation class
+
 
 public class GameManager {
-    // DONE Board size
-    // TODO Implement random ship placement
-    // TODO Implement different board sizes
-    // TODO Implement scoring system x2 (different scales)
+    // DONE Different board sizes
+    // DONE Implement random ship placement
     // TODO Implement ship placement via input file
+    // TODO Implement scoring system x2 (different scales)
+    // TODO Saving previous game scores
     // TODO Implement GUI
 
     public static void main(String[] args) {
@@ -18,6 +15,11 @@ public class GameManager {
         boardPlayer1.placeShipsRandomly();
         System.out.println("Player 1 Board:");
         boardPlayer1.showShipPlacement();
+
+        Board boardPlayer2 = new Board(boardSize,true);
+        boardPlayer2.placeShipsRandomly();
+        System.out.println("Player 2 Board:");
+        boardPlayer2.showShipPlacement();
     }
 
     /*
