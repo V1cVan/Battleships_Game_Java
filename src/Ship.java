@@ -25,6 +25,19 @@ public class Ship {
         }
     }
 
+    public boolean isShipHit(int[] attackCoordinates){
+        boolean isHit = false;
+        for (int i=0; i<this.SHIP_LENGTH; i++){
+            boolean xHit = (attackCoordinates[0] == this.SHIP_COORDINATES[i][0]);
+            boolean yHit = (attackCoordinates[1] == this.SHIP_COORDINATES[i][1]);
+            if (xHit & yHit){
+                this.hitCount = this.hitCount + 1;
+                return isHit = true;
+            }
+        }
+        return isHit;
+    }
+
     public int[][] getShipCoordinates() {
         return this.SHIP_COORDINATES;
     }
@@ -50,7 +63,4 @@ public class Ship {
         this.SHIP_COORDINATES = coords;
     }
 
-    public void setHitCount(int hitCount) {
-        this.hitCount = hitCount;
-    }
 }

@@ -1,10 +1,10 @@
+// Import packages:
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.HashMap;
 import java.lang.Math;
 
 
@@ -123,8 +123,6 @@ public class Board {
             while (validCoordsFound == false) {
                 int[][] shipCoords = generateShipCoordinates(this.ships[i]);
                 Boolean isValid = isValidShipPlacement(shipCoords, placedShips);
-                System.out.println(isValid);
-                System.out.println(shipCoords);
                 if (isValid == true) {
                     this.ships[i].setShipCoordinates(shipCoords);
                     placedShips.add(this.ships[i]);
@@ -196,9 +194,9 @@ public class Board {
                                 System.out.println("Coordinates have to be numbers seperated with a star.");
                                 numberFormatException.printStackTrace();
                             }
-
                         }
-                    }
+                    } // end of: loop through line elements
+
                     // Check if valid ship placement
                     boolean isValid = isValidShipPlacement(coordinates, placedShips);
                     if (isValid == true) {
@@ -263,11 +261,12 @@ public class Board {
                                                                 +"(2) Ship placed on another ship\n"
                                                                 +"(3) Ship is not continuous.");
                         System.exit(0);
-                    }
+                    }  // end of: Check if placements were valid
 
                 }
                 lineNum = lineNum + 1;
-            }
+            } // end of: loop through lines in file
+
             // Final checks on the numbers of ships defined:
             if (lineNum < 5){
                 System.out.println("Invalid placement of ships. Too few ships defined!");
@@ -297,9 +296,6 @@ public class Board {
             for (int[] coordPair : ship.getShipCoordinates()){
                 int x = coordPair[0];
                 int y = coordPair[1];
-                if (x == 8 | y ==8){
-                    System.out.println("hello");
-                }
                 board[x][y].setTile(ship.getShipSymbol());
             }
         }
@@ -312,7 +308,6 @@ public class Board {
     public Ship[] getShips() {
         return ships;
     }
-
 
     public String showBoard(){
         /**
@@ -329,5 +324,38 @@ public class Board {
             boardText = boardText + "\n";
         }
         return boardText;
+    }
+
+
+    // TODO look at merging all attack sequence methods to one class
+    public int pointsForHit(int[] coordinates){
+        int pointsForHit = 0;
+        // Check if spot has already been attacked
+        if ( this.board[coordinates[0]][coordinates[1]].getHiddenStatus() == false ){
+            System.out.println("Tile has already been attacked.");
+        }else{
+            // Check if a ship is present on the attacked coordinates:
+            for (Ship ship : ships){
+                boolean isHit = ship.isShipHit(coordinates);
+                if (isHit){
+                    // Change board display
+                    board[coordinates[0]][coordinates[1]].setHiddenStatus(false);
+                    // Get corresponding points for ship hit
+                    pointsForHit = ship.getShipPoints();
+                    return pointsForHit;
+                }
+            }
+        }
+        return pointsForHit;
+    }
+
+    public boolean areAllShipsSunk(){
+        boolean allSunk = true;
+        for (Ship ship : this.ships){
+            if (ship.isSunk()==false){
+                return allSunk = false;
+            }
+        }
+        return allSunk;
     }
 }
