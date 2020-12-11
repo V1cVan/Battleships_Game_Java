@@ -19,15 +19,9 @@ import javax.swing.JPanel;
 
 import javax.swing.SwingUtilities;
 
-
-
-
 public class SplashGuiManager {
     // Splash screen:
     private JFrame splashScreenFrame;
-    private JFrame boatLayoutFrame;
-    private JFrame mainGameFrame = new JFrame();
-    private JFrame scoreBoardFrame = new JFrame();
 
     private JPanel informationPanel = new JPanel();
     private JPanel optionsPanel = new JPanel();
@@ -37,7 +31,6 @@ public class SplashGuiManager {
     private JPanel placeShipsPanel = new JPanel();
     private JPanel startPanel = new JPanel();
     private JPanel extrasPanel = new JPanel();
-
 
     // Labels on splash screen:
     private JLabel battleShipTitle = new JLabel("Welcome to Battleship");
@@ -66,20 +59,23 @@ public class SplashGuiManager {
     private JSpinner numberColumnsSpin = new JSpinner(spinColumnModel);
 
     public SplashGuiManager(){
-        splashScreenFrame = new JFrame("Battship Game: selection screen");
+        splashScreenFrame = new JFrame("Battleship Game: selection screen");
 
         // Set splash screen fonts
         battleShipTitle.setFont(new Font("", Font.PLAIN, 30));
         splashInformation.setFont(new Font("", Font.PLAIN, 18));
         boardInformation.setFont(new Font("", Font.PLAIN, 16));
-        boardRowNumber.setFont(new Font("", Font.PLAIN, 15));
-        boardColumnNumber.setFont(new Font("", Font.PLAIN, 15));
-        playerOneName.setFont(new Font("", Font.PLAIN, 15));
-        playerTwoName.setFont(new Font("", Font.PLAIN, 15));
-        firstPlayer.setFont(new Font("", Font.PLAIN, 15));
-        firstPlayerRButton.setFont(new Font("", Font.PLAIN, 13));
-        secondPlayerRButton.setFont(new Font("", Font.PLAIN, 13));
-        scoreCompensationButton.setFont(new Font("", Font.PLAIN, 13));
+        boardRowNumber.setFont(new Font("", Font.PLAIN, 16));
+        boardColumnNumber.setFont(new Font("", Font.PLAIN, 16));
+        playerOneName.setFont(new Font("", Font.PLAIN, 16));
+        playerTwoName.setFont(new Font("", Font.PLAIN, 16));
+        firstPlayer.setFont(new Font("", Font.PLAIN, 16));
+        firstPlayerRButton.setFont(new Font("", Font.PLAIN, 14));
+        secondPlayerRButton.setFont(new Font("", Font.PLAIN, 14));
+        scoreCompensationButton.setFont(new Font("", Font.PLAIN, 14));
+        numberRowsSpin.setFont(new Font("", Font.PLAIN, 14));
+        numberColumnsSpin.setFont(new Font("", Font.PLAIN, 14));
+        scoreCompensationButton.setFont(new Font("", Font.PLAIN, 14));
 
         // Splash screen information panel
         informationPanel.add(battleShipTitle);
@@ -204,12 +200,91 @@ public class SplashGuiManager {
         }
     }
 
+
+
     private class ShipPlacementActionListener implements ActionListener {
+        private JFrame boatLayoutFrame;
         @Override
         public void actionPerformed(ActionEvent e) {
             splashScreenFrame.setEnabled(false);
-            // TODO ship placement GUI
+            boatLayoutFrame = new JFrame("Place ships on board:");
+            boatLayoutFrame.setLayout(new GridLayout(1,2));
+
+            JPanel player1Panel = new JPanel();
+            JPanel player2Panel = new JPanel();
+            JLabel player1Label = new JLabel("Player 1 boat layout:");
+            JLabel player2Label = new JLabel("Player 2 boat layout:");
+            JTextField player1PlacementField = new JTextField();
+            JTextField player2PlacementField = new JTextField();
+            JButton confirmPlacementButton = new JButton("Confirm ship placement");
+            JButton closeButton = new JButton("Close");
+            JButton informationButton = new JButton("Info");
+
+            JFrame boatLayoutFrame = new JFrame("Place ships on board:");
+            boatLayoutFrame.setLayout(new GridLayout(1,2));
+
+            player1Panel.setLayout(new GridLayout(3,1));
+            player1Panel.setBorder(BorderFactory.createEmptyBorder(15,30,15,15));
+            player1Panel.add(player1Label);
+            player1Panel.add(player1PlacementField);
+            player1PlacementField.setPreferredSize(new Dimension(200,100));
+            player1Panel.add(confirmPlacementButton);
+            confirmPlacementButton.addActionListener( new SaveActionListener());
+            confirmPlacementButton.setPreferredSize(new Dimension(150,20));
+
+            player2Panel.setLayout(new GridLayout(3,1));
+            player2Panel.setBorder(BorderFactory.createEmptyBorder(15,15,15,30));
+            player2Panel.add(player2Label);
+            player2Panel.add(player2PlacementField);
+            player2PlacementField.setPreferredSize(new Dimension(200,100));
+            player2Panel.add(closeButton);
+            closeButton.addActionListener(new ActionListener() {
+                    public void actionPerformed (ActionEvent event){
+                        boatLayoutFrame.dispose();
+                        splashScreenFrame.setEnabled(true);
+                        splashScreenFrame.setVisible(true);
+                    }
+                }
+            ); // end of addActionListener method
+            closeButton.setPreferredSize(new Dimension(150,20));
+            informationButton.setPreferredSize(new Dimension(50,20));
+            informationButton.addActionListener(new InfoActionListener());
+
+            boatLayoutFrame.add(player1Panel);
+            boatLayoutFrame.add(player2Panel);
+;
+            boatLayoutFrame.setLocation(1000,100);
+            boatLayoutFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            boatLayoutFrame.pack();
+            boatLayoutFrame.setVisible(true);
         }
+
+        private class SaveActionListener implements ActionListener {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO text file names to main!
+            }
+        }
+
+        private class InfoActionListener implements ActionListener {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(boatLayoutFrame,
+                        "Please note that the text file location has to be in the correct directory.\n" +
+                                "Boat entries should be in the following form:\n" +
+                                "8\n" +
+                                "Carrier;3*2;3*3;3*4;3*5;3*6 \n" +
+                                "Battleship;5*6;6*6;7*6;8*6 \n" +
+                                "Submarine;5*2;6*2;7*2;\n" +
+                                "Destroyer;1*7;1*8\n" +
+                                "\nWhere:\n8 = square board size\n" +
+                                "Elements of a line are separated by a semicolon ;\n" +
+                                "And x and y coordinates are separated by an asterisk *",
+                        "Text file location",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
     }
 
 }
