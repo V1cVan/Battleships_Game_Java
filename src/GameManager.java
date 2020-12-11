@@ -1,5 +1,4 @@
 // Import packages:
-import java.awt.*;
 import java.io.FileReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -115,9 +114,9 @@ public class GameManager {
 //            System.out.println("The game is a tie!");
 //        }
 
-        // GUI
-        MenuManager gui = new MenuManager();
-
+        // GUI's
+        SplashGuiManager splashGui = new SplashGuiManager();
+        MainGuiManager mainGui = new MainGuiManager();
     }
 
     private static int[] readBoardSize(String filename) {
