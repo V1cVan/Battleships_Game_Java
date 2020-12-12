@@ -1,4 +1,4 @@
-
+package backend;
 
 public class Ship {
 
@@ -8,7 +8,7 @@ public class Ship {
     private final int SHIP_LENGTH;
     private int hitCount;
 
-    // Ship class constructor
+    // working.Ship class constructor
     public Ship (int pnts, int length, String type, int[][]shipCoords) {
         this.SHIP_POINTS = pnts;
         this.SHIP_TYPE = type;

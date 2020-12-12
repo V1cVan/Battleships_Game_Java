@@ -1,3 +1,5 @@
+package backend;
+
 public class Tile {
     /*
     Colour of tiles:

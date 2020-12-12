@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton; // Buttons
@@ -17,8 +16,6 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane; // Message dialogs
 import javax.swing.JPanel;
 
-import javax.swing.SwingUtilities;
-
 public class SplashGuiManager {
     // Splash screen:
     private JFrame splashScreenFrame;
@@ -33,14 +30,14 @@ public class SplashGuiManager {
     private JPanel extrasPanel = new JPanel();
 
     // Labels on splash screen:
-    private JLabel battleShipTitle = new JLabel("Welcome to Battleship");
-    private JLabel splashInformation = new JLabel("Please select your options and get started");
-    private JLabel playerOneName = new JLabel("Player 1 name:");
-    private JLabel playerTwoName = new JLabel("Player 2 name:");
-    private JLabel firstPlayer = new JLabel("Player to go first:");
-    private JLabel boardInformation = new JLabel("Choose the board size:");
-    private JLabel boardRowNumber = new JLabel("  Rows",JLabel.LEFT);
-    private JLabel boardColumnNumber = new JLabel("  Columns",JLabel.LEFT);
+    private JLabel battleShipTitleLabel = new JLabel("Welcome to Battleship");
+    private JLabel splashInformationLabel = new JLabel("Please select your options and get started");
+    private JLabel playerOneNameLabel = new JLabel("Player 1 name:");
+    private JLabel playerTwoNameLabel = new JLabel("Player 2 name:");
+    private JLabel firstPlayerLabel = new JLabel("Player to go first:");
+    private JLabel boardInformationLabel = new JLabel("Choose the board size:");
+    private JLabel boardRowNumberLabel = new JLabel("  Rows",JLabel.LEFT);
+    private JLabel boardColumnNumberLabel = new JLabel("  Columns",JLabel.LEFT);
 
     // Elements on splash screen:
     private JButton shipPlacementButton = new JButton("Choose Ship Placement");
@@ -58,18 +55,33 @@ public class SplashGuiManager {
     private SpinnerModel spinColumnModel = new SpinnerNumberModel(8, 5, 15, 1);
     private JSpinner numberColumnsSpin = new JSpinner(spinColumnModel);
 
+    // Game functionality variables:
+
+    private boolean isBoardSizeFromFile = false;
+    private String playerOneName;
+    private String playerTwoName;
+    private boolean isPlayerOneFirst;
+    private boolean playerOneDisadvantage;
+    private boolean playerTwoDisadvantage;
+    private int[] boardSizePlayerOne;
+    private int[] boardSizePlayerTwo;
+    private String shipLayoutFileLayout1;
+    private String shipLayoutFileLayout2;
+
     public SplashGuiManager(){
         splashScreenFrame = new JFrame("Battleship Game: selection screen");
 
         // Set splash screen fonts
-        battleShipTitle.setFont(new Font("", Font.PLAIN, 30));
-        splashInformation.setFont(new Font("", Font.PLAIN, 18));
-        boardInformation.setFont(new Font("", Font.PLAIN, 16));
-        boardRowNumber.setFont(new Font("", Font.PLAIN, 16));
-        boardColumnNumber.setFont(new Font("", Font.PLAIN, 16));
-        playerOneName.setFont(new Font("", Font.PLAIN, 16));
-        playerTwoName.setFont(new Font("", Font.PLAIN, 16));
-        firstPlayer.setFont(new Font("", Font.PLAIN, 16));
+        battleShipTitleLabel.setFont(new Font("", Font.PLAIN, 30));
+        splashInformationLabel.setFont(new Font("", Font.PLAIN, 18));
+        boardInformationLabel.setFont(new Font("", Font.PLAIN, 16));
+        boardRowNumberLabel.setFont(new Font("", Font.PLAIN, 16));
+        boardColumnNumberLabel.setFont(new Font("", Font.PLAIN, 16));
+        playerOneNameLabel.setFont(new Font("", Font.PLAIN, 16));
+        playerOneNameBox.setFont(new Font("", Font.PLAIN, 16));
+        playerTwoNameLabel.setFont(new Font("", Font.PLAIN, 16));
+        playerTwoNameBox.setFont(new Font("", Font.PLAIN, 16));
+        firstPlayerLabel.setFont(new Font("", Font.PLAIN, 16));
         firstPlayerRButton.setFont(new Font("", Font.PLAIN, 14));
         secondPlayerRButton.setFont(new Font("", Font.PLAIN, 14));
         scoreCompensationButton.setFont(new Font("", Font.PLAIN, 14));
@@ -78,10 +90,10 @@ public class SplashGuiManager {
         scoreCompensationButton.setFont(new Font("", Font.PLAIN, 14));
 
         // Splash screen information panel
-        informationPanel.add(battleShipTitle);
-        battleShipTitle.setHorizontalAlignment(0);
-        informationPanel.add(splashInformation);
-        splashInformation.setHorizontalAlignment(0);
+        informationPanel.add(battleShipTitleLabel);
+        battleShipTitleLabel.setHorizontalAlignment(0);
+        informationPanel.add(splashInformationLabel);
+        splashInformationLabel.setHorizontalAlignment(0);
         informationPanel.setBorder(BorderFactory.createEmptyBorder(10,30,10,30));
         informationPanel.setLayout(new GridLayout(2,1));
 
@@ -91,11 +103,13 @@ public class SplashGuiManager {
         // Scoring setting panel:
         customScoringPanel.setBorder(BorderFactory.createEtchedBorder());
         customScoringPanel.setLayout(new GridLayout(8,1));
-        customScoringPanel.add(playerOneName);
+        customScoringPanel.add(playerOneNameLabel);
         customScoringPanel.add(playerOneNameBox);
-        customScoringPanel.add(playerTwoName);
+        playerOneNameBox.setText("Lecturer");
+        customScoringPanel.add(playerTwoNameLabel);
         customScoringPanel.add(playerTwoNameBox);
-        customScoringPanel.add(firstPlayer);
+        playerTwoNameBox.setText("Student");
+        customScoringPanel.add(firstPlayerLabel);
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(firstPlayerRButton);
         firstPlayerRButton.setSelected(true);
@@ -108,10 +122,10 @@ public class SplashGuiManager {
         // Splash screen board options panel
         boardSizePanel.setBorder(BorderFactory.createEtchedBorder());
         boardSizePanel.setLayout(new GridLayout(5,1));
-        boardSizePanel.add(boardInformation);
-        boardSizePanel.add(boardRowNumber);
+        boardSizePanel.add(boardInformationLabel);
+        boardSizePanel.add(boardRowNumberLabel);
         boardSizePanel.add(numberRowsSpin);
-        boardSizePanel.add(boardColumnNumber);
+        boardSizePanel.add(boardColumnNumberLabel);
         boardSizePanel.add(numberColumnsSpin);
         optionsPanel.add(boardSizePanel);
 
@@ -196,31 +210,69 @@ public class SplashGuiManager {
     private class StartButtonActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO implement game start
+            // Get all the game settings from splash screen:
+            playerOneName = playerOneNameBox.getText();
+            playerTwoName = playerTwoNameBox.getText();
+            String firstPlayer = firstPlayerRButton.getText();
+            playerOneDisadvantage = false;
+            playerTwoDisadvantage = false;
+            if (firstPlayer == "Player 1"){
+                isPlayerOneFirst = true;
+                if (scoreCompensationButton.isSelected()){
+                    playerOneDisadvantage = true;
+                    playerTwoDisadvantage = false;
+                }
+            }else{
+                isPlayerOneFirst = false;
+                if (scoreCompensationButton.isSelected()){
+                    playerOneDisadvantage = false;
+                    playerTwoDisadvantage = true;
+                }
+            }
+            if (isBoardSizeFromFile == false){
+                int numRows = (Integer) spinRowModel.getValue();
+                int numColumns = (Integer) spinColumnModel.getValue();
+                boardSizePlayerOne = new int[] {numRows,numColumns};
+                boardSizePlayerTwo = new int[] {numRows,numColumns};
+            }else{
+                boardSizePlayerOne = null;
+                boardSizePlayerTwo = null;
+            }
+            splashScreenFrame.dispose();
+            MainGuiManager mainGuiManager = new MainGuiManager(
+                    isBoardSizeFromFile,
+                    playerOneName,
+                    playerTwoName,
+                    isPlayerOneFirst,
+                    playerOneDisadvantage,
+                    playerTwoDisadvantage,
+                    boardSizePlayerOne,
+                    boardSizePlayerTwo,
+                    shipLayoutFileLayout1,
+                    shipLayoutFileLayout2);
         }
     }
 
-
-
     private class ShipPlacementActionListener implements ActionListener {
         private JFrame boatLayoutFrame;
+        private JPanel player1Panel = new JPanel();
+        private JPanel player2Panel = new JPanel();
+        private JLabel player1Label = new JLabel("Player 1 boat layout file name :\n" +
+                "(place in <gamedirectory>/src/");
+        private JLabel player2Label = new JLabel("Player 2 boat layout file name :\n" +
+                "(place in <gamedirectory>/src/");
+        private JTextField player1PlacementField = new JTextField();
+        private JTextField player2PlacementField = new JTextField();
+        private JButton confirmPlacementButton = new JButton("Load ship placement file");
+        private JButton closeButton = new JButton("Close");
+        private JButton informationButton = new JButton("Info");
+
+
         @Override
         public void actionPerformed(ActionEvent e) {
             splashScreenFrame.setEnabled(false);
-            boatLayoutFrame = new JFrame("Place ships on board:");
+            boatLayoutFrame = new JFrame("Set file names for boat placements:");
             boatLayoutFrame.setLayout(new GridLayout(1,2));
-
-            JPanel player1Panel = new JPanel();
-            JPanel player2Panel = new JPanel();
-            JLabel player1Label = new JLabel("Player 1 boat layout:");
-            JLabel player2Label = new JLabel("Player 2 boat layout:");
-            JTextField player1PlacementField = new JTextField();
-            JTextField player2PlacementField = new JTextField();
-            JButton confirmPlacementButton = new JButton("Confirm ship placement");
-            JButton closeButton = new JButton("Close");
-            JButton informationButton = new JButton("Info");
-
-            JFrame boatLayoutFrame = new JFrame("Place ships on board:");
             boatLayoutFrame.setLayout(new GridLayout(1,2));
 
             player1Panel.setLayout(new GridLayout(3,1));
@@ -228,6 +280,7 @@ public class SplashGuiManager {
             player1Panel.add(player1Label);
             player1Panel.add(player1PlacementField);
             player1PlacementField.setPreferredSize(new Dimension(200,100));
+            player1PlacementField.setText("src/gameSettingsPlayer1.txt");
             player1Panel.add(confirmPlacementButton);
             confirmPlacementButton.addActionListener( new SaveActionListener());
             confirmPlacementButton.setPreferredSize(new Dimension(150,20));
@@ -237,6 +290,7 @@ public class SplashGuiManager {
             player2Panel.add(player2Label);
             player2Panel.add(player2PlacementField);
             player2PlacementField.setPreferredSize(new Dimension(200,100));
+            player2PlacementField.setText("src/gameSettingsPlayer2.txt");
             player2Panel.add(closeButton);
             closeButton.addActionListener(new ActionListener() {
                     public void actionPerformed (ActionEvent event){
@@ -252,7 +306,6 @@ public class SplashGuiManager {
 
             boatLayoutFrame.add(player1Panel);
             boatLayoutFrame.add(player2Panel);
-;
             boatLayoutFrame.setLocation(1000,100);
             boatLayoutFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             boatLayoutFrame.pack();
@@ -262,7 +315,9 @@ public class SplashGuiManager {
         private class SaveActionListener implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO text file names to main!
+                shipLayoutFileLayout1 = player1PlacementField.getText();
+                shipLayoutFileLayout2 = player2PlacementField.getText();
+                isBoardSizeFromFile = true;
             }
         }
 
@@ -287,4 +342,44 @@ public class SplashGuiManager {
 
     }
 
+    // Class getters:
+    public boolean getIsBoardSizeFromFile() {
+        return isBoardSizeFromFile;
+    }
+
+    public String getPlayerOneName() {
+        return playerOneName;
+    }
+
+    public String getPlayerTwoName() {
+        return playerTwoName;
+    }
+
+    public boolean getIsPlayerOneFirst() {
+        return isPlayerOneFirst;
+    }
+
+    public boolean getPlayerOneDisadvantage() {
+        return playerOneDisadvantage;
+    }
+
+    public boolean getPlayerTwoDisadvantage() {
+        return playerTwoDisadvantage;
+    }
+
+    public int[] getBoardSizePlayerOne() {
+        return boardSizePlayerOne;
+    }
+
+    public int[] getBoardSizePlayerTwo() {
+        return boardSizePlayerTwo;
+    }
+
+    public String getShipLayoutFileLayout1() {
+        return shipLayoutFileLayout1;
+    }
+
+    public String getShipLayoutFileLayout2() {
+        return shipLayoutFileLayout2;
+    }
 }
