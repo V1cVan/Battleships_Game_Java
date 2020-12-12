@@ -21,12 +21,12 @@ public class BattleshipsGameMain {
     private static Board boardPlayerTwo;
     private static Player playerOne;
     private static Player playerTwo;
+    private static boolean isPlayerOnesTurn;
+    private static boolean isGameOver = false;
 
-    // You can adjust this boolean to disable the Gui and play from the console.
+    // You can adjust this boolean to disable the Gui and play from the console instead.
     // (game functionality is fully present without GUI interface)
-    private static boolean playWithoutGUI = true;
-
-    public BattleshipsGameMain(){}
+    private static boolean playWithoutGUI = false;
 
     public static void initBoards(int[] boardSizePlayerOne, int[] boardSizePlayerTwo){
         boardPlayerOne = new Board(boardSizePlayerOne);
@@ -55,6 +55,92 @@ public class BattleshipsGameMain {
 
     public int getPlayerTwoScore(){
         return playerTwo.getScore();
+    }
+
+    public boolean getIsPlayerOnesTurn(){
+        return isPlayerOnesTurn;
+    }
+
+    public void setIsPlayerOnesTurn(boolean isPlayerOnesTurn){
+        this.isPlayerOnesTurn = isPlayerOnesTurn;
+    }
+
+    public boolean getIsGameOver(){
+        return isGameOver;
+    }
+
+    public static boolean attackCoordinates(int[] attackCoordinates) throws InterruptedException {
+        boolean isValidAttack = true;
+        if (isPlayerOnesTurn == false) {  // Player 2 turn
+            // See if player gets points for shot
+            int pointsForHit = boardPlayerOne.pointsForHit(attackCoordinates);
+            if ( pointsForHit > 0){
+                if (playWithoutGUI == true) {
+                    System.out.println("Hit!");
+                    Thread.sleep(700);
+                }
+                // Assign points for hit
+                playerTwo.increaseScore(pointsForHit);
+                // Check if game is over
+                if (boardPlayerOne.areAllShipsSunk()){
+                    isGameOver = true;
+                }
+            }else if (pointsForHit == -1){
+                isValidAttack = false;
+            }else{
+                if (playWithoutGUI == true) {
+                    System.out.println("Miss!");
+                    Thread.sleep(700);
+                }
+            }
+        }else{  // Player 1 turn
+            int pointsForHit = boardPlayerTwo.pointsForHit(attackCoordinates);
+            if ( pointsForHit > 0){
+                if (playWithoutGUI == true) {
+                    System.out.println("Hit!");
+                    Thread.sleep(700);
+                }
+                // Assign points for hit
+                playerOne.increaseScore(pointsForHit);
+                // Check if game is over
+                if (boardPlayerTwo.areAllShipsSunk()){
+                    isGameOver = true;
+                }
+            }else if (pointsForHit == -1){
+                isValidAttack = false;
+            }else{
+                if (playWithoutGUI == true) {
+                    System.out.println("Miss!");
+                    Thread.sleep(700);
+                }
+            }
+        }
+        return isValidAttack;
+    }
+
+    public char[][] getCurrentBoardChars(){
+        char[][] boardCharacters;
+        if (isPlayerOnesTurn){// return player 2's board color characters of the tiles
+            boardCharacters = boardPlayerTwo.getCharBasedBoard();
+        }else{// return player 1's board color characters of the tiles
+            boardCharacters = boardPlayerOne.getCharBasedBoard();
+        }
+        return boardCharacters;
+    }
+
+    public static int checkWhoWon(){
+        int didPlayerOneWin;
+        if (playerOne.getScore()>playerTwo.getScore()){
+            // Player one won the game
+            didPlayerOneWin = 1;
+        }else if (playerOne.getScore()<playerTwo.getScore()){
+            // Player two won the game
+            didPlayerOneWin = 0;
+        }else{
+            // Game is a draw
+            didPlayerOneWin = -1;
+        }
+        return didPlayerOneWin;
     }
 
     public static int[] readBoardSize(String filename) {
@@ -144,20 +230,20 @@ public class BattleshipsGameMain {
             initPlayers(playerOneName, playerTwoName, false, false);
 
             // Play the game:
-            boolean gameRunning = true;
-            boolean isPlayer1Turn = true;
+
+            isPlayerOnesTurn = true;
             Scanner userInput = new Scanner(System.in);
             System.out.println("\nGame has begun ... \n");
-            while (gameRunning) {
+            while (isGameOver == false) {
                 System.out.println("Current Score:");
                 System.out.println(playerOne.getName()+" = "+ String.valueOf(playerOne.getScore()));
                 System.out.println(playerTwo.getName()+" = "+ String.valueOf(playerTwo.getScore())+"\n");
-                if (isPlayer1Turn == false) {  // Player 2 turn
+                if (isPlayerOnesTurn == false) {  // Player 2 turn
                     System.out.println(playerTwo.getName()+"'s turn! Take your shot.\n");
-                    System.out.println(boardPlayerOne.showBoard());
+                    System.out.println(boardPlayerOne.getTextBasedBoard());
                 }else {  // Player 1 turn
                     System.out.println(playerOne.getName()+"'s Turn! Take your shot...\n");
-                    System.out.println(boardPlayerTwo.showBoard());
+                    System.out.println(boardPlayerTwo.getTextBasedBoard());
                 }
 
                 // Take shot at board:
@@ -166,47 +252,16 @@ public class BattleshipsGameMain {
                 String input = userInput.nextLine();
                 int x = Integer.parseInt(input.split(",")[0]);
                 int y = Integer.parseInt(input.split(",")[1]);
-                int[] attackCoordinates = new int[] {x-1,y-1};
-                if (isPlayer1Turn == false) {  // Player 2 turn
-                    // See if player gets points for shot
-                    int pointsForHit = boardPlayerOne.pointsForHit(attackCoordinates);
-                    if ( pointsForHit > 0){
-                        System.out.println("Hit!");
-                        Thread.sleep(700);
-                        // Assign points for hit
-                        playerTwo.increaseScore(pointsForHit);
-                        // Check if game is over
-                        if (boardPlayerOne.areAllShipsSunk()){
-                            gameRunning = false;
-                        }
-                    }else{
-                        System.out.println("Miss!");
-                        Thread.sleep(700);
-                    }
-                }else{  // Player 1 turn
-                    int pointsForHit = boardPlayerTwo.pointsForHit(attackCoordinates);
-                    if ( pointsForHit > 0){
-                        System.out.println("Hit!");
-                        Thread.sleep(700);
-                        // Assign points for hit
-                        playerOne.increaseScore(pointsForHit);
-                        // Check if game is over
-                        if (boardPlayerTwo.areAllShipsSunk()){
-                            gameRunning = false;
-                        }
-                    }else{
-                        System.out.println("Miss!");
-                        Thread.sleep(700);
-                    }
-                }
-            // Next players turn
-                isPlayer1Turn = !isPlayer1Turn;
+                int[] coordinates = new int[] {x-1,y-1};
+
+                attackCoordinates(coordinates);
 
             } // end of game loop
 
-            if (playerOne.getScore()>playerTwo.getScore()){
+            // Check if player one won the game 1=yes, 0=no, -1=draw
+            if (checkWhoWon() == 1){
                 System.out.println(playerOne.getName()+" has won the game!");
-            }else if (playerOne.getScore()<playerTwo.getScore()){
+            }else if (checkWhoWon() == 0){
                 System.out.println(playerTwo.getName()+" has won the game!");
             }else{
                 System.out.println("The game is a tie!");
@@ -214,6 +269,7 @@ public class BattleshipsGameMain {
         }
 
     }
+
 
 
 }

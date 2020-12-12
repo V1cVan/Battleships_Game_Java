@@ -309,11 +309,11 @@ public class Board {
         return ships;
     }
 
-    public String showBoard(){
+    public String getTextBasedBoard(){
         /**
-         Shows a text-based representation of the board with locations of the ships.
+         Shows a text-based representation of the board with the locations of the ships if they are visible.
          @param None
-         @return boardText: String containing the ship locations.
+         @return boardText: String containing the board with all of it's tiles.
          @throws None
          */
         String boardText = "";
@@ -326,21 +326,34 @@ public class Board {
         return boardText;
     }
 
-
+    public char[][] getCharBasedBoard(){
+        int xSize = BOARD_SIZE[0];
+        int ySize = BOARD_SIZE[1];
+        char[][] boardColours = new char[xSize][ySize];
+        for (int xIndex=0; xIndex<xSize; xIndex++) {
+            for (int yIndex = 0; yIndex < ySize; yIndex++) {
+                boardColours[xIndex][yIndex] = board[xIndex][yIndex].getTileType();
+            }
+        }
+        return boardColours;
+    }
 
     // TODO look at merging all attack sequence methods to one class
     public int pointsForHit(int[] coordinates){
         int pointsForHit = 0;
+
         // Check if spot has already been attacked
-        if ( this.board[coordinates[0]][coordinates[1]].getHiddenStatus() == false ){
+        if ( board[coordinates[0]][coordinates[1]].getHiddenStatus() == false ){
             System.out.println("Tile has already been attacked.");
+            // -1 = flag that player attacked the same tile
+            return pointsForHit = -1;
         }else{
+            // Change board display
+            board[coordinates[0]][coordinates[1]].setHiddenStatus(false);
             // Check if a ship is present on the attacked coordinates:
             for (Ship ship : ships){
                 boolean isHit = ship.isShipHit(coordinates);
                 if (isHit){
-                    // Change board display
-                    board[coordinates[0]][coordinates[1]].setHiddenStatus(false);
                     // Get corresponding points for ship hit
                     pointsForHit = ship.getShipPoints();
                     return pointsForHit;

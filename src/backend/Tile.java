@@ -6,7 +6,7 @@ public class Tile {
         f = grey fog-of-war
         w = water
         d = green ship - Destroyer; length 2
-        s = purple ship - Submarine; length 3
+        s = magenta ship - Submarine; length 3
         b = red ship - Battleship; length 4
         c = yellow ship - Carrier; length 5
     */

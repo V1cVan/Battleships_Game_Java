@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
+import java.lang.Thread;
 
 import javax.swing.*;
 
@@ -35,7 +36,6 @@ public class MainGuiManager {
     private final boolean IS_PLAYER_TWO_DISADVANTAGED;
     private final int[] BOARD_SIZE_PLAYER_ONE;
     private final int[] BOARD_SIZE_PLAYER_TWO;
-    private boolean isPlayerOnesTurn;
 
     public MainGuiManager(boolean isBoardSizeFrmFile,
                           String playerOneNme,
@@ -66,7 +66,7 @@ public class MainGuiManager {
         }
 
         // Current turn is set depending on whether player one was selected to go first
-        isPlayerOnesTurn = IS_PLAYER_ONE_FIRST;
+        gameMain.setIsPlayerOnesTurn(IS_PLAYER_ONE_FIRST);
 
         // Initialise the two boards in the backend
         gameMain.initBoards(BOARD_SIZE_PLAYER_ONE, BOARD_SIZE_PLAYER_TWO);
@@ -81,7 +81,7 @@ public class MainGuiManager {
         mainGuiFrame = new JFrame("Battleship");
 
         // Initialise tiles on board for the player going first
-        this.createBoardTiles();
+        this.createBoardGui();
         boardPanel.setMinimumSize(new Dimension(800,800));
 
         // Set game gui fonts:
@@ -105,7 +105,6 @@ public class MainGuiManager {
         player1Panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         player1Label.setText(PLAYER_ONE_NAME+"'s score:");
         player1Panel.add(player1Label);
-        player1ScoreLabel.setText(Integer.toString(gameMain.getPlayerOneScore()));
         player1ScoreLabel.setHorizontalAlignment(JLabel.CENTER);
         player1Panel.add(player1ScoreLabel);
         informationPanel.add(player1Panel);
@@ -115,11 +114,6 @@ public class MainGuiManager {
         currentTurnPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         currentTurnPanel.add(turnLabel);
         turnLabel.setHorizontalAlignment(JLabel.CENTER);
-        if (isPlayerOnesTurn == true){
-            currentTurnLabel.setText(PLAYER_ONE_NAME);
-        }else{
-            currentTurnLabel.setText(PLAYER_TWO_NAME);
-        }
         currentTurnLabel.setHorizontalAlignment(JLabel.CENTER);
         currentTurnPanel.add(currentTurnLabel);
         informationPanel.add(currentTurnPanel);
@@ -129,7 +123,6 @@ public class MainGuiManager {
         player2Panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         player2Label.setText(PLAYER_TWO_NAME+"'s score:");
         player2Panel.add(player2Label);
-        player2ScoreLabel.setText(Integer.toString(gameMain.getPlayerTwoScore()));
         player2ScoreLabel.setHorizontalAlignment(JLabel.CENTER);
         player2Panel.add(player2ScoreLabel);
         informationPanel.add(player2Panel);
@@ -139,7 +132,6 @@ public class MainGuiManager {
         informationPanel.add(exitButton);
 
         // Add items to main gui for battleships game:
-
         mainGuiFrame.setLayout(new BorderLayout());
         mainGuiFrame.setLocation(1000, 100);
         mainGuiFrame.setMinimumSize(new Dimension(800,800));
@@ -150,30 +142,77 @@ public class MainGuiManager {
         mainGuiFrame.setVisible(true);
     }
 
-    private void createBoardTiles(){
-        if (isPlayerOnesTurn){
-            boardButton = new JButton[BOARD_SIZE_PLAYER_ONE[0]][BOARD_SIZE_PLAYER_ONE[1]];
-            boardPanel.setLayout(new GridLayout(BOARD_SIZE_PLAYER_ONE[0],BOARD_SIZE_PLAYER_ONE[1]));
-            for (int xTileIndex=0; xTileIndex<BOARD_SIZE_PLAYER_ONE[0]; xTileIndex++){
-                for (int yTileIndex=0; yTileIndex<BOARD_SIZE_PLAYER_ONE[1]; yTileIndex++){
+    public void createBoardGui(){
+        // Set current score
+        player1ScoreLabel.setText(Integer.toString(gameMain.getPlayerOneScore()));
+        player2ScoreLabel.setText(Integer.toString(gameMain.getPlayerTwoScore()));
+
+        // Get current attacked players board in characters
+        char[][] boardCharacters = gameMain.getCurrentBoardChars();
+
+        // Create board tiles
+        if (gameMain.getIsPlayerOnesTurn()){
+            // Set turn label
+            currentTurnLabel.setText(PLAYER_ONE_NAME);
+            // Set board of player 2
+            boardButton = new JButton[BOARD_SIZE_PLAYER_TWO[0]][BOARD_SIZE_PLAYER_TWO[1]];
+            boardPanel.setLayout(new GridLayout(BOARD_SIZE_PLAYER_TWO[0],BOARD_SIZE_PLAYER_TWO[1]));
+            for (int xTileIndex=0; xTileIndex<BOARD_SIZE_PLAYER_TWO[0]; xTileIndex++){
+                for (int yTileIndex=0; yTileIndex<BOARD_SIZE_PLAYER_TWO[1]; yTileIndex++){
                     boardButton[xTileIndex][yTileIndex] = new JButton();
                     boardButton[xTileIndex][yTileIndex].setSize(50,50);
-                    boardButton[xTileIndex][yTileIndex].addActionListener(new AttackActionListener());
+                    boardButton[xTileIndex][yTileIndex].addActionListener(
+                            new AttackActionListener(xTileIndex, yTileIndex));
+                    boardButton[xTileIndex][yTileIndex].setBackground(
+                            getMatchingColor(boardCharacters[xTileIndex][yTileIndex]));
                     boardPanel.add(boardButton[xTileIndex][yTileIndex]);
                 }
             }
         }else{ // if player two's turn
+            // Set turn label
+            currentTurnLabel.setText(PLAYER_TWO_NAME);
+            // Set board of player 1
             boardButton = new JButton[BOARD_SIZE_PLAYER_ONE[0]][BOARD_SIZE_PLAYER_ONE[1]];
             boardPanel.setLayout(new GridLayout(BOARD_SIZE_PLAYER_TWO[0],BOARD_SIZE_PLAYER_TWO[1]));
             for (int xTileIndex=0; xTileIndex<BOARD_SIZE_PLAYER_TWO[0]; xTileIndex++){
                 for (int yTileIndex=0; yTileIndex<BOARD_SIZE_PLAYER_TWO[1]; yTileIndex++){
                     boardButton[xTileIndex][yTileIndex] = new JButton();
                     boardButton[xTileIndex][yTileIndex].setSize(50,50);
-                    boardButton[xTileIndex][yTileIndex].addActionListener(new AttackActionListener());
+                    boardButton[xTileIndex][yTileIndex].addActionListener(
+                            new AttackActionListener(xTileIndex, yTileIndex));
+                    boardButton[xTileIndex][yTileIndex].setBackground(
+                            getMatchingColor(boardCharacters[xTileIndex][yTileIndex]));
                     boardPanel.add(boardButton[xTileIndex][yTileIndex]);
                 }
             }
         }
+    }
+
+    private Color getMatchingColor(char tileCharacter){
+        Color tileColor;
+        switch(tileCharacter) {
+            case 'f': // fog of war ; grey tile
+                tileColor = Color.GRAY;
+                break;
+            case 'w': // water ; blue tile
+                tileColor = Color.BLUE;
+                break;
+            case 'd': // destroyer ; green tile
+                tileColor = Color.GREEN;
+                break;
+            case 's': // submarine ; pink tile
+                tileColor = Color.MAGENTA;
+                break;
+            case 'b': // battleship ; red tile
+                tileColor = Color.RED;
+                break;
+            case 'c': // carrier ; yellow tile
+                tileColor = Color.YELLOW;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + tileCharacter);
+        }
+        return tileColor;
     }
 
     private class ExitActionListener implements ActionListener {
@@ -195,10 +234,62 @@ public class MainGuiManager {
         }
     }
 
-    private class AttackActionListener implements ActionListener {
+    private class AttackActionListener implements ActionListener  {
+        // Attack coordinates
+        private int xAttackCoordinate;
+        private int yAttackCoordinate;
+        public AttackActionListener(int xTileIndex, int yTileIndex){
+            // Set attack coordinates corresponding to the button pressed on the GUI
+            xAttackCoordinate = xTileIndex;
+            yAttackCoordinate = yTileIndex;
+        }
+
         @Override
         public void actionPerformed(ActionEvent e) {
-            // TODO attack
+            try { // Try Catch block is implemented for thread sleep after an attack
+                int[] attackCoordinates = new int[] {xAttackCoordinate, yAttackCoordinate};
+                boolean isValidAttack = gameMain.attackCoordinates(attackCoordinates);
+                if (isValidAttack == true) {
+                    // Next players turn if attack was not on a tile already attacked
+                    gameMain.setIsPlayerOnesTurn(!gameMain.getIsPlayerOnesTurn());
+//                    Thread.sleep(500);
+                    boardPanel.removeAll();
+                    createBoardGui();
+                }else{
+                    gameMain.setIsPlayerOnesTurn(gameMain.getIsPlayerOnesTurn());
+                }
+                if (gameMain.getIsGameOver() == true){
+                    if(gameMain.checkWhoWon() == 1) {
+                        JOptionPane.showMessageDialog(mainGuiFrame,
+                                PLAYER_ONE_NAME+"HAS WON THE GAME!\n\n"+
+                                        "Score Overview:\n" +
+                                        PLAYER_ONE_NAME+" = "+String.valueOf(gameMain.getPlayerOneScore())+" points\n"+
+                                        PLAYER_TWO_NAME+" = "+String.valueOf(gameMain.getPlayerTwoScore())+" points",
+                                "The game is over!",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }else if(gameMain.checkWhoWon() == 0){
+                        JOptionPane.showMessageDialog(mainGuiFrame,
+                                PLAYER_TWO_NAME+"HAS WON THE GAME!\n\n"+
+                                        "Score Overview:\n" +
+                                        PLAYER_ONE_NAME+" = "+String.valueOf(gameMain.getPlayerOneScore())+" points\n"+
+                                        PLAYER_TWO_NAME+" = "+String.valueOf(gameMain.getPlayerTwoScore())+" points",
+                                "The game is over!",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }else{
+                        JOptionPane.showMessageDialog(mainGuiFrame,
+                                "THE GAME IS A TIE!\n\n"+
+                                        "Score Overview:\n" +
+                                        PLAYER_ONE_NAME+" = "+String.valueOf(gameMain.getPlayerOneScore())+" points\n"+
+                                        PLAYER_TWO_NAME+" = "+String.valueOf(gameMain.getPlayerTwoScore())+" points",
+                                "The game is over!",
+                                JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
+            }
+
         }
     }
 
