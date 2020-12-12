@@ -4,9 +4,13 @@ import backend.Player;
 import javax.swing.SwingUtilities;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
+import java.io.PrintWriter;
 import java.io.IOException;
-import java.util.Scanner;
+import java.util.*;
 import java.lang.Thread;
+import java.util.SortedMap;
 
 public class BattleshipsGameMain {
     // DONE Different board sizes
@@ -23,6 +27,8 @@ public class BattleshipsGameMain {
     private static Player playerTwo;
     private static boolean isPlayerOnesTurn;
     private static boolean isGameOver = false;
+    private static SortedMap<Integer, String> playersOnLeaderboard
+            = new TreeMap<Integer, String>(Collections.reverseOrder());
 
     // You can adjust this boolean to disable the Gui and play from the console instead.
     // (game functionality is fully present without GUI interface)
@@ -33,14 +39,16 @@ public class BattleshipsGameMain {
         boardPlayerTwo = new Board(boardSizePlayerTwo);
     }
 
-    public static void placeShips(boolean isPlaceShipsFromFile, String playerOneFileName, String playerTwoFileName){
+    public static int[] placeShips(boolean isPlaceShipsFromFile, String playerOneFileName, String playerTwoFileName){
+        int[] shipPlacementFileErrors = new int[] {0,0};
         if (isPlaceShipsFromFile == true){
-            boardPlayerOne.readShipPlacementFile(playerOneFileName);
-            boardPlayerTwo.readShipPlacementFile(playerTwoFileName);
+            shipPlacementFileErrors[0] = boardPlayerOne.readShipPlacementFile(playerOneFileName);
+            shipPlacementFileErrors[1] = boardPlayerTwo.readShipPlacementFile(playerTwoFileName);
         }else{ // Place ships randomly
             boardPlayerOne.placeShipsRandomly();
             boardPlayerTwo.placeShipsRandomly();
         }
+        return shipPlacementFileErrors;
     }
 
     public static void initPlayers(String playerOneName, String playerTwoName,
@@ -183,6 +191,94 @@ public class BattleshipsGameMain {
         return boardSize;
     }
 
+    public void loadLeaderboardFromFile(){
+        try(
+                FileReader file = new FileReader("src/leaderboard.txt");
+                Scanner scan = new Scanner(file))
+        {
+            while (scan.hasNext()) {
+                String line = scan.nextLine();
+                String[] lineElements = line.split("\\,");
+                playersOnLeaderboard.put(Integer.valueOf(lineElements[1].strip()), lineElements[0].strip());
+            }
+        } catch(FileNotFoundException fileNotFoundException){
+            fileNotFoundException.printStackTrace();
+        } catch(IOException ioException) {
+            ioException.printStackTrace();
+        }
+    }
+
+    public String getLeaderboard(){
+        loadLeaderboardFromFile();
+        String leaderBoard = "";
+        Set set = playersOnLeaderboard.entrySet();
+        Iterator i = set.iterator();
+
+        // Loop through map and add to leaderboard string
+        int positionCounter = 1;
+        while (i.hasNext()) {
+            Map.Entry tempMap = (Map.Entry)i.next();
+            leaderBoard = leaderBoard + String.valueOf(positionCounter) + ".  "
+                    + tempMap.getValue()+ " ("+String.valueOf(tempMap.getKey()) +" wins)\n";
+            positionCounter ++;
+        }
+        return leaderBoard;
+    }
+
+    public void addWinnerToLeaderboard(String playerName){
+        Set set = playersOnLeaderboard.entrySet();
+        Iterator i = set.iterator();
+
+        // Loop through leaderboard
+        String playerNameOriginal = playerName;
+        int newPlayerNumWins = 1;
+        boolean existsOnScoreboard = false;
+        playerName = playerName.toLowerCase();
+        int index = 0;
+        int counter = 0;
+        while (i.hasNext()) {
+            Map.Entry tempMap = (Map.Entry)i.next();
+            String name = String.valueOf(tempMap.getValue()).toLowerCase().strip();
+            int oldPlayerNumberWins = (int) tempMap.getKey();
+            if (name.equals(playerName)){
+                existsOnScoreboard = true;
+                newPlayerNumWins = oldPlayerNumberWins +1;
+                index = counter;
+            }
+            counter ++;
+        }
+        if (existsOnScoreboard){
+            System.out.println(index);
+            System.out.println(playersOnLeaderboard);
+            playersOnLeaderboard.remove(newPlayerNumWins-1);
+            System.out.println(playersOnLeaderboard);
+            playersOnLeaderboard.put(newPlayerNumWins, playerNameOriginal);
+            System.out.println(playersOnLeaderboard);
+        }else{
+            playersOnLeaderboard.put(newPlayerNumWins, playerNameOriginal);
+        }
+
+        try(FileWriter fileWriter = new FileWriter("src/leaderboard.txt", false);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            PrintWriter output = new PrintWriter(bufferedWriter))
+        {
+            Set writeSet = playersOnLeaderboard.entrySet();
+            Iterator writeIterator = writeSet.iterator();
+
+            while (writeIterator.hasNext()) {
+                Map.Entry tempMap = (Map.Entry)writeIterator.next();
+                String name = String.valueOf(tempMap.getValue()).toLowerCase().strip();
+                int wins = (int) tempMap.getKey();
+                output.println(name +", "+String.valueOf(wins));
+            }
+        } catch(FileNotFoundException fileNotFoundException){
+            fileNotFoundException.printStackTrace();
+        } catch(IOException ioException) {
+            ioException.printStackTrace();
+        }
+
+    }
+
     public static void main(String[] args) throws InterruptedException {
         // play game with GUI
         if (playWithoutGUI == false) {
@@ -192,7 +288,7 @@ public class BattleshipsGameMain {
                     SplashGuiManager splashGui = new SplashGuiManager();
                 }
             });
-        // play without GUI
+        // play without GUI (can ignore when marking this project as GUI is fully working).
         }else{
             // Initialise player boards:
             String gameFilePlayer1 = new String("src/gameSettingsPlayer1.txt");
@@ -269,7 +365,5 @@ public class BattleshipsGameMain {
         }
 
     }
-
-
 
 }

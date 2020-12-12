@@ -74,8 +74,16 @@ public class MainGuiManager {
         gameMain.initPlayers(PLAYER_ONE_NAME, PLAYER_TWO_NAME,
                 IS_PLAYER_ONE_DISADVANTAGED, IS_PLAYER_TWO_DISADVANTAGED);
 
+        // Load leaderboard file:
+        gameMain.loadLeaderboardFromFile();
+
         // Place ships on the boards, either randomly or from the text file definitions
-        gameMain.placeShips(IS_BOARD_SIZE_FROM_FILE , playerOneLayoutFileNme, playerTwoLayoutFileNme);
+        int[] shipPlacementFileErrors = gameMain.placeShips(
+                IS_BOARD_SIZE_FROM_FILE,
+                playerOneLayoutFileNme,
+                playerTwoLayoutFileNme);
+
+        displayBoatPlacementErrors(shipPlacementFileErrors);
 
         // Initialise main gui frame
         mainGuiFrame = new JFrame("Battleship");
@@ -226,10 +234,11 @@ public class MainGuiManager {
     private class ScoreboardActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+            String leaderboard = gameMain.getLeaderboard();
             JOptionPane.showMessageDialog(mainGuiFrame,
-                    "Local Battleships Scoreboard:\n" +
-                            "TODO!!!!",
-                    "Scoreboard",
+                    "Local Battleships Scoreboard:\n\n" +
+                            leaderboard,
+                    "Local Leaderboard",
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -260,16 +269,18 @@ public class MainGuiManager {
                 }
                 if (gameMain.getIsGameOver() == true){
                     if(gameMain.checkWhoWon() == 1) {
+                        gameMain.addWinnerToLeaderboard(PLAYER_ONE_NAME);
                         JOptionPane.showMessageDialog(mainGuiFrame,
-                                PLAYER_ONE_NAME+"HAS WON THE GAME!\n\n"+
+                                PLAYER_ONE_NAME.toUpperCase()+" HAS WON THE GAME!\n\n"+
                                         "Score Overview:\n" +
                                         PLAYER_ONE_NAME+" = "+String.valueOf(gameMain.getPlayerOneScore())+" points\n"+
                                         PLAYER_TWO_NAME+" = "+String.valueOf(gameMain.getPlayerTwoScore())+" points",
                                 "The game is over!",
                                 JOptionPane.INFORMATION_MESSAGE);
                     }else if(gameMain.checkWhoWon() == 0){
+                        gameMain.addWinnerToLeaderboard(PLAYER_TWO_NAME);
                         JOptionPane.showMessageDialog(mainGuiFrame,
-                                PLAYER_TWO_NAME+"HAS WON THE GAME!\n\n"+
+                                PLAYER_TWO_NAME.toUpperCase()+" HAS WON THE GAME!\n\n"+
                                         "Score Overview:\n" +
                                         PLAYER_ONE_NAME+" = "+String.valueOf(gameMain.getPlayerOneScore())+" points\n"+
                                         PLAYER_TWO_NAME+" = "+String.valueOf(gameMain.getPlayerTwoScore())+" points",
@@ -284,14 +295,138 @@ public class MainGuiManager {
                                 "The game is over!",
                                 JOptionPane.INFORMATION_MESSAGE);
                     }
+                    mainGuiFrame.dispose();
+                    String leaderboard = gameMain.getLeaderboard();
+                    JOptionPane.showMessageDialog(mainGuiFrame,
+                            "Local Battleships Scoreboard:\n\n" +
+                                    leaderboard,
+                            "Local Leaderboard",
+                            JOptionPane.INFORMATION_MESSAGE);
+                    Thread.sleep(1500);
+                    System.exit(0);
                 }
 
             } catch (InterruptedException interruptedException) {
                 interruptedException.printStackTrace();
             }
-
         }
     }
 
+    private void displayBoatPlacementErrors(int[] shipPlacementFileErrors) {
+        // If the user selected to place the ships using the textfiles check if they were properly loaded
+        if (IS_BOARD_SIZE_FROM_FILE == true) {
+            String errorMessageFileOne;
+            String errorMessageFileTwo;
+            int fileOneErrors = shipPlacementFileErrors[0];
+            switch (fileOneErrors) {
+                case 0:
+                    errorMessageFileOne = "Ship definition text file was loaded successfully.";
+                    break;
+                case 3:
+                    errorMessageFileOne = "Invalid placement of ships: Too few ships defined!";
+                    break;
+                case 4:
+                    errorMessageFileOne = "Invalid placement of ships. Too many ships defined!";
+                    break;
+                case 5:
+                    errorMessageFileOne = "Invalid placement of ships. Too few coordinates specified one of the ships.";
+                    break;
+                case 6:
+                    errorMessageFileOne = "Invalid placement of ships. Too many coordinates specified one of the ships.";
+                    break;
+                case 8:
+                    errorMessageFileOne = "Invalid placement of ships. A ship was possibly spelled incorrectly.";
+                    break;
+                case 9:
+                    errorMessageFileOne = "Invalid placement of ships. Coordinates have to be numbers.";
+                    break;
+                case 10:
+                    errorMessageFileOne = "Error during placement of ships. " +
+                            "Ship definition text file was not found.";
+                    break;
+                case 11:
+                    errorMessageFileOne = "Error during placement of ships. " +
+                            "Ship definition text file had an InputOutputException.";
+                    break;
+                default:
+                    errorMessageFileOne = "Error during placement of ships. " +
+                            "Possible causes:\n" +
+                            "- A ship has been placed off of the board.\n" +
+                            "- A ship has been placed on another ship.\n" +
+                            "- A ship is not continuous.";
+            }
 
+            int fileTwoErrors = shipPlacementFileErrors[1];
+            switch (fileTwoErrors) {
+                case 0:
+                    errorMessageFileTwo = "Ship definition text file was loaded successfully.";
+                    break;
+                case 3:
+                    errorMessageFileTwo = "Invalid placement of ships: Too few ships defined!";
+                    break;
+                case 4:
+                    errorMessageFileTwo = "Invalid placement of ships. Too many ships defined!";
+                    break;
+                case 5:
+                    errorMessageFileTwo = "Invalid placement of ships. Too few coordinates specified one of the ships.";
+                    break;
+                case 6:
+                    errorMessageFileTwo = "Invalid placement of ships. Too many coordinates specified one of the ships.";
+                    break;
+                case 8:
+                    errorMessageFileTwo = "Invalid placement of ships. A ship was possibly spelled incorrectly.";
+                    break;
+                case 9:
+                    errorMessageFileTwo = "Invalid placement of ships. Coordinates have to be numbers.";
+                    break;
+                case 10:
+                    errorMessageFileTwo = "Error during placement of ships. " +
+                            "Ship definition text file was not found.";
+                    break;
+                case 11:
+                    errorMessageFileTwo = "Error during placement of ships. " +
+                            "Ship definition text file had an InputOutputException.";
+                    break;
+                default:
+                    errorMessageFileTwo = "Error during placement of ships. " +
+                            "Possible causes:\n" +
+                            "- A ship has been placed off of the board.\n" +
+                            "- A ship has been placed on another ship.\n" +
+                            "- A ship is not continuous.";
+            }
+            if ((fileOneErrors == 0) & (fileTwoErrors) == 0) {
+                JOptionPane.showMessageDialog(mainGuiFrame,
+                        PLAYER_ONE_NAME + "'s ship placement file was loaded successfully.\n\n" +
+                                PLAYER_TWO_NAME + "'s ship placement files was loaded successfully.\n\n" +
+                                "Enjoy the game!",
+                        "Loading ship placement text files.",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } else if ((fileOneErrors != 0) & (fileTwoErrors == 0)) {
+                JOptionPane.showMessageDialog(mainGuiFrame,
+                        PLAYER_ONE_NAME + "'s ship placement file was NOT loaded successfully.\n" +
+                                errorMessageFileOne + "\n" + "The ships have been placed randomly instead.\n\n" +
+                                PLAYER_TWO_NAME + "'s ship placement files was loaded successfully.\n\n" +
+                                "Enjoy the game!",
+                        "Loading ship placement text files.",
+                        JOptionPane.WARNING_MESSAGE);
+            } else if ((fileOneErrors == 0) & (fileTwoErrors != 0)) {
+                JOptionPane.showMessageDialog(mainGuiFrame,
+                        PLAYER_ONE_NAME + "'s ship placement files was loaded successfully.\n\n" +
+                                PLAYER_TWO_NAME + "'s ship placement files was NOT loaded successfully.\n" +
+                                errorMessageFileTwo + "\n" + "The ships have been placed randomly instead.\n\n" +
+                                "Enjoy the game!",
+                        "Loading ship placement text files.",
+                        JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(mainGuiFrame,
+                        PLAYER_ONE_NAME + "'s ship placement files was NOT loaded successfully.\n" +
+                                errorMessageFileOne + "\n" + "The ships have been placed randomly instead.\n\n" +
+                                PLAYER_TWO_NAME + "'s ship placement files was NOT loaded successfully.\n" +
+                                errorMessageFileTwo + "\n" + "The ships have been placed randomly instead.\n\n" +
+                                "Enjoy the game!",
+                        "Loading ship placement text files.",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        }
+    }
 }

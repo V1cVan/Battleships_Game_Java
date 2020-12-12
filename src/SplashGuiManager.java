@@ -56,7 +56,7 @@ public class SplashGuiManager {
     private JSpinner numberColumnsSpin = new JSpinner(spinColumnModel);
 
     // Game functionality variables:
-
+    private BattleshipsGameMain gameMain = new BattleshipsGameMain();
     private boolean isBoardSizeFromFile = false;
     private String playerOneName;
     private String playerTwoName;
@@ -191,10 +191,12 @@ public class SplashGuiManager {
     private class ScoreboardActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
+
+            String leaderboard = gameMain.getLeaderboard();
             JOptionPane.showMessageDialog(splashScreenFrame,
-                    "Local Battleships Scoreboard:\n" +
-                            "TODO!!!!",
-                    "Scoreboard",
+                    "Local Battleships Scoreboard:\n\n" +
+                            leaderboard,
+                    "Local Leaderboard",
                     JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -278,8 +280,9 @@ public class SplashGuiManager {
             player1Panel.setBorder(BorderFactory.createEmptyBorder(15,30,15,15));
             player1Panel.add(player1Label);
             player1Panel.add(player1PlacementField);
-            player1PlacementField.setPreferredSize(new Dimension(200,100));
+            player1PlacementField.setPreferredSize(new Dimension(200,50));
             player1PlacementField.setText("src/gameSettingsPlayer1.txt");
+            player1PlacementField.setFont(new Font("",Font.PLAIN,15));
             player1Panel.add(confirmPlacementButton);
             confirmPlacementButton.addActionListener( new SaveActionListener());
             confirmPlacementButton.setPreferredSize(new Dimension(150,20));
@@ -288,8 +291,9 @@ public class SplashGuiManager {
             player2Panel.setBorder(BorderFactory.createEmptyBorder(15,15,15,30));
             player2Panel.add(player2Label);
             player2Panel.add(player2PlacementField);
-            player2PlacementField.setPreferredSize(new Dimension(200,100));
+            player2PlacementField.setPreferredSize(new Dimension(200,50));
             player2PlacementField.setText("src/gameSettingsPlayer2.txt");
+            player2PlacementField.setFont(new Font("",Font.PLAIN,15));
             player2Panel.add(closeButton);
             closeButton.addActionListener(new ActionListener() {
                     public void actionPerformed (ActionEvent event){
@@ -341,44 +345,4 @@ public class SplashGuiManager {
 
     }
 
-    // Class getters:
-    public boolean getIsBoardSizeFromFile() {
-        return isBoardSizeFromFile;
-    }
-
-    public String getPlayerOneName() {
-        return playerOneName;
-    }
-
-    public String getPlayerTwoName() {
-        return playerTwoName;
-    }
-
-    public boolean getIsPlayerOneFirst() {
-        return isPlayerOneFirst;
-    }
-
-    public boolean getPlayerOneDisadvantage() {
-        return playerOneDisadvantage;
-    }
-
-    public boolean getPlayerTwoDisadvantage() {
-        return playerTwoDisadvantage;
-    }
-
-    public int[] getBoardSizePlayerOne() {
-        return boardSizePlayerOne;
-    }
-
-    public int[] getBoardSizePlayerTwo() {
-        return boardSizePlayerTwo;
-    }
-
-    public String getShipLayoutFileLayout1() {
-        return shipLayoutFileLayout1;
-    }
-
-    public String getShipLayoutFileLayout2() {
-        return shipLayoutFileLayout2;
-    }
 }

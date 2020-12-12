@@ -133,8 +133,9 @@ public class Board {
         this.setShipPlacement();
     }
 
-    public void readShipPlacementFile(String filename){
+    public int readShipPlacementFile(String filename){
         /**
+         // TODO Update comment according to new return value
          Reads in ship coordinates from the provided game text files.
          @param filename = file read from
          @return None
@@ -142,9 +143,13 @@ public class Board {
                                         (4) too many ships, (5) too few coordinates specified for ship,
                                         (6) too many coordinates specified for ship, (7) ships are not continuous
                  (8) ErrorsInShipNaming
-                 (9) NumberFormatException : inputting letters instead of numbers for ship coordinates.
+                 (9) NumberFormatException : inputting letters instead of numbers for ship coordinates or using
+                                             the incorrect separators (; and *) in the text file.
+                 (10) FileNotFoundException
+                 (11) IOException
          */
-
+        // Error number corresponds to the errors in ship placement as defined above
+        int loadShipsErrorNumber = 0; // 0 = no error
         ArrayList<Ship> placedShips = new ArrayList<Ship>();
         int[][] coordinates = null;
         String shipType = null;
@@ -181,7 +186,7 @@ public class Board {
                                 default:
                                     System.out.println("Error in setting a ship from the gameSettings text file!");
                                     System.out.println("Ship possibly spelled incorrectly.");
-                                    System.exit(0);
+                                    return loadShipsErrorNumber = 8;
                             }
                         }else{ // read in ship coordinates
                             String[] coordElements = lineElements[lineIndex].split("\\*");
@@ -193,6 +198,7 @@ public class Board {
                                 System.out.println("Error placing the " + shipType + " ship!");
                                 System.out.println("Coordinates have to be numbers seperated with a star.");
                                 numberFormatException.printStackTrace();
+                                return loadShipsErrorNumber = 9;
                             }
                         }
                     } // end of: loop through line elements
@@ -205,11 +211,11 @@ public class Board {
                                 if (coordinates.length > ships[3].getShipLength()){
                                     System.out.println("Too many coordinates specified for the" + shipType);
                                     System.out.println("Please edit the ship placement definition txt.");
-                                    System.exit(0);
+                                    loadShipsErrorNumber = 6;
                                 }else if(coordinates.length < ships[3].getShipLength()){
                                     System.out.println("Too few coordinates specified for the" + shipType);
                                     System.out.println("Please edit the ship placement definition txt.");
-                                    System.exit(0);
+                                    loadShipsErrorNumber = 5;
                                 }
                                 this.ships[3].setShipCoordinates(coordinates);
                                 placedShips.add(this.ships[3]);
@@ -218,11 +224,11 @@ public class Board {
                                 if (coordinates.length > ships[2].getShipLength()){
                                     System.out.println("Too many coordinates specified for the" + shipType);
                                     System.out.println("Please edit the ship placement definition txt.");
-                                    System.exit(0);
+                                    loadShipsErrorNumber = 6;
                                 }else if(coordinates.length < ships[2].getShipLength()){
                                     System.out.println("Too few coordinates specified for the" + shipType);
                                     System.out.println("Please edit the ship placement definition txt.");
-                                    System.exit(0);
+                                    loadShipsErrorNumber = 5;
                                 }
                                 this.ships[2].setShipCoordinates(coordinates);
                                 placedShips.add(this.ships[2]);
@@ -231,11 +237,11 @@ public class Board {
                                 if (coordinates.length > ships[1].getShipLength()){
                                     System.out.println("Too many coordinates specified for the" + shipType);
                                     System.out.println("Please edit the ship placement definition txt.");
-                                    System.exit(0);
+                                    loadShipsErrorNumber = 6;
                                 }else if(coordinates.length < ships[1].getShipLength()){
                                     System.out.println("Too few coordinates specified for the" + shipType);
                                     System.out.println("Please edit the ship placement definition txt.");
-                                    System.exit(0);
+                                    loadShipsErrorNumber = 5;
                                 }
                                 this.ships[1].setShipCoordinates(coordinates);
                                 placedShips.add(this.ships[1]);
@@ -244,11 +250,11 @@ public class Board {
                                 if (coordinates.length > ships[0].getShipLength()){
                                     System.out.println("Too many coordinates specified for the" + shipType);
                                     System.out.println("Please edit the ship placement definition txt.");
-                                    System.exit(0);
+                                    loadShipsErrorNumber = 6;
                                 }else if(coordinates.length < ships[0].getShipLength()){
                                     System.out.println("Too few coordinates specified for the" + shipType);
                                     System.out.println("Please edit the ship placement definition txt.");
-                                    System.exit(0);
+                                    loadShipsErrorNumber = 5;
                                 }
                                 this.ships[0].setShipCoordinates(coordinates);
                                 placedShips.add(this.ships[0]);
@@ -257,12 +263,11 @@ public class Board {
                         }
                     }else{
                         System.out.println("Invalid placement of ships. Please edit the ship placement definition txt.");
-                        System.out.println("Possible causes:\n" +"(1) Ship off of board\n"
-                                                                +"(2) Ship placed on another ship\n"
-                                                                +"(3) Ship is not continuous.");
-                        System.exit(0);
+                        System.out.println("Possible causes:\n" +"- Ship off of board\n"
+                                                                +"- Ship placed on another ship\n"
+                                                                +"- Ship is not continuous.");
+                        loadShipsErrorNumber = 1; // Corresponding to errors 1, 2, or 7
                     }  // end of: Check if placements were valid
-
                 }
                 lineNum = lineNum + 1;
             } // end of: loop through lines in file
@@ -270,19 +275,26 @@ public class Board {
             // Final checks on the numbers of ships defined:
             if (lineNum < 5){
                 System.out.println("Invalid placement of ships. Too few ships defined!");
-                System.exit(0);
+                loadShipsErrorNumber = 3;
             }else if(lineNum > 5){
                 System.out.println("Invalid placement of ships. Too many ships defined!");
-                System.exit(0);
+                loadShipsErrorNumber = 4;
             }else {  // if all check passed
-                this.setShipPlacement();
+                if (loadShipsErrorNumber == 0) {
+                    this.setShipPlacement();
+                }else{
+                    this.placeShipsRandomly();
+                }
             }
 
         } catch(FileNotFoundException fileNotFoundException){
             fileNotFoundException.printStackTrace();
+            return loadShipsErrorNumber = 10;
         } catch(IOException ioException) {
             ioException.printStackTrace();
+            return loadShipsErrorNumber = 11;
         }
+        return loadShipsErrorNumber;
     }
 
     public void setShipPlacement() {
