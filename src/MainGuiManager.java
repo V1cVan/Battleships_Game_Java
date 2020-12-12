@@ -74,31 +74,14 @@ public class MainGuiManager {
         gameMain.initPlayers(PLAYER_ONE_NAME, PLAYER_TWO_NAME,
                 IS_PLAYER_ONE_DISADVANTAGED, IS_PLAYER_TWO_DISADVANTAGED);
 
+        // Place ships on the boards, either randomly or from the text file definitions
+        gameMain.placeShips(IS_BOARD_SIZE_FROM_FILE , playerOneLayoutFileNme, playerTwoLayoutFileNme);
+
         // Initialise main gui frame
         mainGuiFrame = new JFrame("Battleship");
 
         // Initialise tiles on board for the player going first
-        if (isPlayerOnesTurn){
-            boardButton = new JButton[BOARD_SIZE_PLAYER_ONE[0]][BOARD_SIZE_PLAYER_ONE[1]];
-            boardPanel.setLayout(new GridLayout(BOARD_SIZE_PLAYER_ONE[0],BOARD_SIZE_PLAYER_ONE[1]));
-            for (int xTileIndex=0; xTileIndex<BOARD_SIZE_PLAYER_ONE[0]; xTileIndex++){
-                for (int yTileIndex=0; yTileIndex<BOARD_SIZE_PLAYER_ONE[1]; yTileIndex++){
-                    boardButton[xTileIndex][yTileIndex] = new JButton();
-                    boardButton[xTileIndex][yTileIndex].setSize(50,50);
-                    boardPanel.add(boardButton[xTileIndex][yTileIndex]);
-                }
-            }
-        }else{ //if player two goes first
-            boardButton = new JButton[BOARD_SIZE_PLAYER_ONE[0]][BOARD_SIZE_PLAYER_ONE[1]];
-            boardPanel.setLayout(new GridLayout(BOARD_SIZE_PLAYER_TWO[0],BOARD_SIZE_PLAYER_TWO[1]));
-            for (int xTileIndex=0; xTileIndex<BOARD_SIZE_PLAYER_TWO[0]; xTileIndex++){
-                for (int yTileIndex=0; yTileIndex<BOARD_SIZE_PLAYER_TWO[1]; yTileIndex++){
-                    boardButton[xTileIndex][yTileIndex] = new JButton();
-                    boardButton[xTileIndex][yTileIndex].setSize(50,50);
-                    boardPanel.add(boardButton[xTileIndex][yTileIndex]);
-                }
-            }
-        }
+        this.createBoardTiles();
         boardPanel.setMinimumSize(new Dimension(800,800));
 
         // Set game gui fonts:
@@ -167,6 +150,32 @@ public class MainGuiManager {
         mainGuiFrame.setVisible(true);
     }
 
+    private void createBoardTiles(){
+        if (isPlayerOnesTurn){
+            boardButton = new JButton[BOARD_SIZE_PLAYER_ONE[0]][BOARD_SIZE_PLAYER_ONE[1]];
+            boardPanel.setLayout(new GridLayout(BOARD_SIZE_PLAYER_ONE[0],BOARD_SIZE_PLAYER_ONE[1]));
+            for (int xTileIndex=0; xTileIndex<BOARD_SIZE_PLAYER_ONE[0]; xTileIndex++){
+                for (int yTileIndex=0; yTileIndex<BOARD_SIZE_PLAYER_ONE[1]; yTileIndex++){
+                    boardButton[xTileIndex][yTileIndex] = new JButton();
+                    boardButton[xTileIndex][yTileIndex].setSize(50,50);
+                    boardButton[xTileIndex][yTileIndex].addActionListener(new AttackActionListener());
+                    boardPanel.add(boardButton[xTileIndex][yTileIndex]);
+                }
+            }
+        }else{ // if player two's turn
+            boardButton = new JButton[BOARD_SIZE_PLAYER_ONE[0]][BOARD_SIZE_PLAYER_ONE[1]];
+            boardPanel.setLayout(new GridLayout(BOARD_SIZE_PLAYER_TWO[0],BOARD_SIZE_PLAYER_TWO[1]));
+            for (int xTileIndex=0; xTileIndex<BOARD_SIZE_PLAYER_TWO[0]; xTileIndex++){
+                for (int yTileIndex=0; yTileIndex<BOARD_SIZE_PLAYER_TWO[1]; yTileIndex++){
+                    boardButton[xTileIndex][yTileIndex] = new JButton();
+                    boardButton[xTileIndex][yTileIndex].setSize(50,50);
+                    boardButton[xTileIndex][yTileIndex].addActionListener(new AttackActionListener());
+                    boardPanel.add(boardButton[xTileIndex][yTileIndex]);
+                }
+            }
+        }
+    }
+
     private class ExitActionListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -192,4 +201,6 @@ public class MainGuiManager {
             // TODO attack
         }
     }
+
+
 }

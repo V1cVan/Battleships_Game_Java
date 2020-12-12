@@ -213,16 +213,15 @@ public class SplashGuiManager {
             // Get all the game settings from splash screen:
             playerOneName = playerOneNameBox.getText();
             playerTwoName = playerTwoNameBox.getText();
-            String firstPlayer = firstPlayerRButton.getText();
             playerOneDisadvantage = false;
             playerTwoDisadvantage = false;
-            if (firstPlayer == "Player 1"){
+            if (firstPlayerRButton.isSelected() == true){
                 isPlayerOneFirst = true;
                 if (scoreCompensationButton.isSelected()){
                     playerOneDisadvantage = true;
                     playerTwoDisadvantage = false;
                 }
-            }else{
+            }else if (secondPlayerRButton.isSelected() == true) {
                 isPlayerOneFirst = false;
                 if (scoreCompensationButton.isSelected()){
                     playerOneDisadvantage = false;

@@ -8,7 +8,7 @@ public class Ship {
     private final int SHIP_LENGTH;
     private int hitCount;
 
-    // working.Ship class constructor
+    // Ship class constructor
     public Ship (int pnts, int length, String type, int[][]shipCoords) {
         this.SHIP_POINTS = pnts;
         this.SHIP_TYPE = type;

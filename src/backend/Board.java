@@ -34,8 +34,8 @@ public class Board {
     private int[][] generateShipCoordinates(Ship currentShip){
         /**
          Generates random ship coordinates.
-         @param currentShip: working.Ship who's coordinates are being generated
-         @return shipCoords: working.Ship's generated coordiantes.
+         @param currentShip: Ship who's coordinates are being generated
+         @return shipCoords: Ship's generated coordiantes.
          @throws None
          */
 
@@ -180,7 +180,7 @@ public class Board {
                                     break;
                                 default:
                                     System.out.println("Error in setting a ship from the gameSettings text file!");
-                                    System.out.println("working.Ship possibly spelled incorrectly.");
+                                    System.out.println("Ship possibly spelled incorrectly.");
                                     System.exit(0);
                             }
                         }else{ // read in ship coordinates
@@ -257,9 +257,9 @@ public class Board {
                         }
                     }else{
                         System.out.println("Invalid placement of ships. Please edit the ship placement definition txt.");
-                        System.out.println("Possible causes:\n" +"(1) working.Ship off of board\n"
-                                                                +"(2) working.Ship placed on another ship\n"
-                                                                +"(3) working.Ship is not continuous.");
+                        System.out.println("Possible causes:\n" +"(1) Ship off of board\n"
+                                                                +"(2) Ship placed on another ship\n"
+                                                                +"(3) Ship is not continuous.");
                         System.exit(0);
                     }  // end of: Check if placements were valid
 
@@ -333,7 +333,7 @@ public class Board {
         int pointsForHit = 0;
         // Check if spot has already been attacked
         if ( this.board[coordinates[0]][coordinates[1]].getHiddenStatus() == false ){
-            System.out.println("working.Tile has already been attacked.");
+            System.out.println("Tile has already been attacked.");
         }else{
             // Check if a ship is present on the attacked coordinates:
             for (Ship ship : ships){
