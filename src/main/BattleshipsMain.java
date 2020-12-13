@@ -48,7 +48,7 @@ public class BattleshipsMain {
             = new TreeMap<>(Collections.reverseOrder());
     /* You can adjust this boolean to disable the Gui and play from the console instead.
        (game functionality is fully present without GUI interface) */
-    private final static boolean playWithGUI = false;
+    private final static boolean playWithGUI = true;
 
     public static void initBoards(int[] boardSizePlayerOne, int[] boardSizePlayerTwo){
         /*

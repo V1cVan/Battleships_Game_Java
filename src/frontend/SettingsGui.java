@@ -38,7 +38,7 @@ public class SettingsGui {
     private JFrame splashScreenFrame;
     private JPanel informationPanel = new JPanel();
     private JPanel optionsPanel = new JPanel();
-    private JPanel customScoringPanel = new JPanel();
+    private JPanel playerSettingsPanel = new JPanel();
     private JPanel boardSizePanel = new JPanel();
     private JPanel buttonsPanel = new JPanel();
     private JPanel placeShipsPanel = new JPanel();
@@ -67,27 +67,26 @@ public class SettingsGui {
     private JButton rulesButton = new JButton("Rules");
     private JButton scoreboardButton = new JButton("High Scores");
     private JButton exitButton = new JButton("Exit");
+    // Spinner values limited to ensure minimum space to place the largest ship
     private SpinnerModel spinRowModel = new SpinnerNumberModel(8, 5, 15, 1);
     private JSpinner numberRowsSpin = new JSpinner(spinRowModel);
     private SpinnerModel spinColumnModel = new SpinnerNumberModel(8, 5, 15, 1);
     private JSpinner numberColumnsSpin = new JSpinner(spinColumnModel);
+    
+    // Variables related to loading custom user defined ship placements
+    private boolean isBoardSizeFromFile = false; // Set as true if user loads user defined ship placement files
+    private String shipLayoutFileLayout1;        // Received from text fields for name of text files to load
+    private String shipLayoutFileLayout2;        // Received from text fields for name of text files to load
 
-    // Game functionality variables extracted from the splash screen to be passed to the GameBoardGui on game start
-    private boolean isBoardSizeFromFile = false;
-    private String playerOneName;
-    private String playerTwoName;
-    private boolean isPlayerOneFirst;
-    private boolean playerOneDisadvantage;
-    private boolean playerTwoDisadvantage;
-    private int[] boardSizePlayerOne;
-    private int[] boardSizePlayerTwo;
-    private String shipLayoutFileLayout1;
-    private String shipLayoutFileLayout2;
-
-    // gameMain instantiation for displaying the leaderboard 
-    private BattleshipsMain gameMain = new BattleshipsMain();
-
+    // SettingsGui class constructor, called when program is run.
     public SettingsGui(){
+        /*
+        splashScreenFrame = Main window for the splash screen GUI on game settings.
+        Contains 3 main elements(panels):
+            (1) informationPanel - Game title and gif
+            (2) optionsPanel     - Player options (Player names, who goes first, etc.), and the board sizes
+            (3) buttonsPanel     - All buttons (start button, rules button, leaderboard button, exit button)
+        */
         splashScreenFrame = new JFrame("Battleship Game: selection screen");
 
         // Set splash screen fonts
@@ -109,41 +108,42 @@ public class SettingsGui {
         scoreCompensationButton.setFont(new Font("", Font.PLAIN, 14));
         startGameButton.setFont(new Font("", Font.BOLD, 16));
 
-        // Splash screen information panel
+        // (1) Set splash screen information panel items including Battleships heading and gif.
         informationPanel.setBorder(BorderFactory.createEmptyBorder(10,30,10,30));
         informationPanel.setLayout(new BorderLayout());
         informationPanel.add(battleShipTitleLabel,BorderLayout.NORTH);
         battleShipTitleLabel.setHorizontalAlignment(0);
         informationPanel.add(splashInformationLabel,BorderLayout.CENTER);
         splashInformationLabel.setHorizontalAlignment(0);
-        ImageIcon battleshipImage = new ImageIcon(this.getClass().getResource("splash.gif"));
+        ImageIcon battleshipImage = new ImageIcon(this.getClass().getResource("splash.gif")); 
         imageLabel.setIcon(battleshipImage);
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         informationPanel.add(imageLabel,BorderLayout.SOUTH);
 
-        // Splash screen game options panel
+        // (2) Splash screen game options panel for setting player names etc. and board sizes
         optionsPanel.setBorder(BorderFactory.createEmptyBorder(10,30,10,30));
         optionsPanel.setLayout(new GridLayout(1,2));
-        // Scoring setting panel:
-        customScoringPanel.setBorder(BorderFactory.createEtchedBorder());
-        customScoringPanel.setLayout(new GridLayout(8,1));
-        customScoringPanel.add(playerOneNameLabel);
-        customScoringPanel.add(playerOneNameBox);
+
+        // Player settings panel contains name fields, the player going first, and the score compensation checkbox
+        playerSettingsPanel.setBorder(BorderFactory.createEtchedBorder());
+        playerSettingsPanel.setLayout(new GridLayout(8,1));
+        playerSettingsPanel.add(playerOneNameLabel);
+        playerSettingsPanel.add(playerOneNameBox);
         playerOneNameBox.setText("Lecturer");
-        customScoringPanel.add(playerTwoNameLabel);
-        customScoringPanel.add(playerTwoNameBox);
+        playerSettingsPanel.add(playerTwoNameLabel);
+        playerSettingsPanel.add(playerTwoNameBox);
         playerTwoNameBox.setText("Student");
-        customScoringPanel.add(firstPlayerLabel);
+        playerSettingsPanel.add(firstPlayerLabel);
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(firstPlayerRButton);
         firstPlayerRButton.setSelected(true);
         buttonGroup.add(secondPlayerRButton);
-        customScoringPanel.add(firstPlayerRButton);
-        customScoringPanel.add(secondPlayerRButton);
-        customScoringPanel.add(scoreCompensationButton);
-        optionsPanel.add(customScoringPanel);
+        playerSettingsPanel.add(firstPlayerRButton);
+        playerSettingsPanel.add(secondPlayerRButton);
+        playerSettingsPanel.add(scoreCompensationButton);
+        optionsPanel.add(playerSettingsPanel);  // add player settings to the game options panel
 
-        // Splash screen board options panel
+        // Splash screen board options panel (for setting board size)
         boardSizePanel.setBorder(BorderFactory.createEtchedBorder());
         boardSizePanel.setLayout(new GridLayout(5,1));
         boardSizePanel.add(boardInformationLabel);
@@ -153,7 +153,7 @@ public class SettingsGui {
         boardSizePanel.add(numberColumnsSpin);
         optionsPanel.add(boardSizePanel);
 
-        // Splash screen buttons panel
+        // (3) Splash screen buttons panel (game start button, game rules button, exit button etc.)
         buttonsPanel.setLayout(new BorderLayout());
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(0,30,30,30));
         shipPlacementButton.setPreferredSize(new Dimension(615,40));
@@ -166,7 +166,6 @@ public class SettingsGui {
         buttonsPanel.add(startPanel,BorderLayout.CENTER);
         startGameButton.addActionListener(new StartButtonActionListener());
 
-
         extrasPanel.add(rulesButton, BorderLayout.LINE_START);
         rulesButton.setPreferredSize(new Dimension(200,50));
         extrasPanel.add(scoreboardButton, BorderLayout.CENTER);
@@ -178,7 +177,7 @@ public class SettingsGui {
         exitButton.addActionListener(new ExitActionListener());
         buttonsPanel.add(extrasPanel, BorderLayout.SOUTH);
 
-        // Final splash screen layout
+        // Adding main elements (1), (2), (3), the the splash screen.
         splashScreenFrame.setLayout(new BorderLayout());
         splashScreenFrame.setLocation(1000,100);
         splashScreenFrame.add(informationPanel, BorderLayout.NORTH);
@@ -190,8 +189,13 @@ public class SettingsGui {
     }
 
     private class GameRulesActionListener implements ActionListener {
+        /*
+         * Action listener triggered when the game rules button is pressed.
+         * Displays the rules of the Battleships game in a pop-up window.
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
+            // Display game rules in message dialogue
             JOptionPane.showMessageDialog(splashScreenFrame,
                     "Basics of the game Battleships:\n" +
                             "- At the start of the game each player places 5 ships on his/her board.\n" +
@@ -212,9 +216,15 @@ public class SettingsGui {
     }
 
     private class ScoreboardActionListener implements ActionListener {
+        /*
+         * Action listener triggered when the scoreboard/leaderboard button is pressed.
+         * Displays players, ordered by their number of wins in a pop-up window.
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
-
+            // gameMain instantiation for displaying the leaderboard
+            BattleshipsMain gameMain = new BattleshipsMain();
+            // Get leaderboard in String format for displaying
             String leaderboard = gameMain.getLeaderboard();
             JOptionPane.showMessageDialog(splashScreenFrame,
                     "Local Battleships Scoreboard:\n\n" +
@@ -225,6 +235,9 @@ public class SettingsGui {
     }
 
     private class ExitActionListener implements ActionListener {
+        /*
+         * Action listener triggered when the exit button is pressed. Closes the program.
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             splashScreenFrame.dispose();
@@ -233,26 +246,34 @@ public class SettingsGui {
     }
 
     private class StartButtonActionListener implements ActionListener {
+        /*
+         * Action listener triggered when the start game button button is pressed.
+         * Instantiates the main game gui where user play.
+         */
         @Override
         public void actionPerformed(ActionEvent e) {
             // Get all the game settings from splash screen:
-            playerOneName = playerOneNameBox.getText();
-            playerTwoName = playerTwoNameBox.getText();
-            playerOneDisadvantage = false;
-            playerTwoDisadvantage = false;
-            if (firstPlayerRButton.isSelected() == true){
+            String playerOneName = playerOneNameBox.getText();
+            String playerTwoName = playerTwoNameBox.getText();
+            boolean playerOneDisadvantage = false;
+            boolean playerTwoDisadvantage = false;
+            boolean isPlayerOneFirst = true;
+            if (firstPlayerRButton.isSelected() == true){           // Receives value from radiobutton
                 isPlayerOneFirst = true;
-                if (scoreCompensationButton.isSelected()){
+                if (scoreCompensationButton.isSelected()){          // Receives value from checkbox
                     playerOneDisadvantage = true;
                     playerTwoDisadvantage = false;
                 }
-            }else if (secondPlayerRButton.isSelected() == true) {
+            }else if (secondPlayerRButton.isSelected() == true) {   // Receives value from radiobutton
                 isPlayerOneFirst = false;
-                if (scoreCompensationButton.isSelected()){
+                if (scoreCompensationButton.isSelected()){          // Receives value from checkbox
                     playerOneDisadvantage = false;
                     playerTwoDisadvantage = true;
                 }
             }
+            int[] boardSizePlayerTwo;
+            int[] boardSizePlayerOne;
+            // If custom user defined ship placement files were not loaded, board sizes are received from spinners
             if (isBoardSizeFromFile == false){
                 int numRows = (Integer) spinRowModel.getValue();
                 int numColumns = (Integer) spinColumnModel.getValue();
@@ -262,8 +283,9 @@ public class SettingsGui {
                 boardSizePlayerOne = null;
                 boardSizePlayerTwo = null;
             }
-            splashScreenFrame.dispose();
-            GameBoardGui mainGuiManager = new GameBoardGui(
+            splashScreenFrame.dispose();    // close splash screen when game is started
+            // Load the main game gui when the game start button is pressed and load settings defined on the splash screen
+            new GameBoardGui(
                     isBoardSizeFromFile,
                     playerOneName,
                     playerTwoName,
@@ -278,6 +300,12 @@ public class SettingsGui {
     }
 
     private class ShipPlacementActionListener implements ActionListener {
+        /*
+         * Action listener triggered when the custom ship placement button is pressed.
+         * Opens a new window where the user can enter the text file names containing the custom ship placements.
+         */
+
+        // Define elements on the ship placements window
         private JFrame boatLayoutFrame;
         private JPanel player1Panel = new JPanel();
         private JPanel player2Panel = new JPanel();
@@ -287,47 +315,45 @@ public class SettingsGui {
         private JTextField player2PlacementField = new JTextField();
         private JButton confirmPlacementButton = new JButton("Load ship placement file");
         private JButton closeButton = new JButton("Close");
-        private JButton informationButton = new JButton("Info");
-
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            splashScreenFrame.setEnabled(false);
+            splashScreenFrame.setEnabled(false);    // Temporarily disable the splash screen when the button is pressed.
             boatLayoutFrame = new JFrame("Set file names for boat placements:");
             boatLayoutFrame.setLayout(new GridLayout(1,2));
             boatLayoutFrame.setLayout(new GridLayout(1,2));
 
+            // Panel where player 1 can enter their text file name
             player1Panel.setLayout(new GridLayout(3,1));
             player1Panel.setBorder(BorderFactory.createEmptyBorder(15,30,15,15));
             player1Panel.add(player1Label);
             player1Panel.add(player1PlacementField);
             player1PlacementField.setPreferredSize(new Dimension(200,50));
-            player1PlacementField.setText("gameSettingsPlayer1.txt");
+            player1PlacementField.setText("gameSettingsPlayer1.txt"); // default text file name
             player1PlacementField.setFont(new Font("",Font.PLAIN,15));
             player1Panel.add(confirmPlacementButton);
             confirmPlacementButton.addActionListener( new SaveActionListener());
             confirmPlacementButton.setPreferredSize(new Dimension(150,20));
 
+            // Panel where player 1 can enter their text file name
             player2Panel.setLayout(new GridLayout(3,1));
             player2Panel.setBorder(BorderFactory.createEmptyBorder(15,15,15,30));
             player2Panel.add(player2Label);
             player2Panel.add(player2PlacementField);
             player2PlacementField.setPreferredSize(new Dimension(200,50));
-            player2PlacementField.setText("gameSettingsPlayer2.txt");
+            player2PlacementField.setText("gameSettingsPlayer2.txt");   // default text file name
             player2PlacementField.setFont(new Font("",Font.PLAIN,15));
             player2Panel.add(closeButton);
+            // Basic action listener for closing the window
             closeButton.addActionListener(new ActionListener() {
                     public void actionPerformed (ActionEvent event){
                         boatLayoutFrame.dispose();
-                        splashScreenFrame.setEnabled(true);
-                        splashScreenFrame.setVisible(true);
+                        splashScreenFrame.setEnabled(true);             // re-enable the splash screen
+                        splashScreenFrame.setVisible(true);             // Bring splash screen to the foreground again
                     }
                 }
-            ); // end of addActionListener method
+            ); // end of addActionListener method for the exit button
             closeButton.setPreferredSize(new Dimension(150,20));
-            informationButton.setPreferredSize(new Dimension(50,20));
-            informationButton.addActionListener(new InfoActionListener());
-
             boatLayoutFrame.add(player1Panel);
             boatLayoutFrame.add(player2Panel);
             boatLayoutFrame.setLocation(1000,100);
@@ -337,6 +363,10 @@ public class SettingsGui {
         }
 
         private class SaveActionListener implements ActionListener {
+            /*
+             * Action listener triggered when the custom ship placement save button is pressed.
+             * Saves the text file names and sets isBoardSizeFromFile to true.
+             */
             @Override
             public void actionPerformed(ActionEvent e) {
                 shipLayoutFileLayout1 = "src/datafiles/"+player1PlacementField.getText();
@@ -344,26 +374,5 @@ public class SettingsGui {
                 isBoardSizeFromFile = true;
             }
         }
-
-        private class InfoActionListener implements ActionListener {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JOptionPane.showMessageDialog(boatLayoutFrame,
-                        "Please note that the text file location has to be in the correct directory.\n" +
-                                "Boat entries should be in the following form:\n" +
-                                "8\n" +
-                                "Carrier;3*2;3*3;3*4;3*5;3*6 \n" +
-                                "Battleship;5*6;6*6;7*6;8*6 \n" +
-                                "Submarine;5*2;6*2;7*2;\n" +
-                                "Destroyer;1*7;1*8\n" +
-                                "\nWhere:\n8 = square board size\n" +
-                                "Elements of a line are separated by a semicolon ;\n" +
-                                "And x and y coordinates are separated by an asterisk *",
-                        "Text file location",
-                        JOptionPane.INFORMATION_MESSAGE);
-            }
-        }
-
     }
-
 }

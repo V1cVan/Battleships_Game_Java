@@ -9,18 +9,17 @@ import java.awt.event.ActionListener;
 import javax.swing.*;
 
 /**
- * The Board class manages each player's board during the game.
- * It is responsible for placing ships either randomly or from the user provided text files,
- *      checking whether or not all the ships on the board have been sunk (game end),
- *      the number of points received for attacking a specific tile,
- *      and providing the current status of the board at the start of each turn.
- * It hosts a number of tile objects relative to the board size, and all the ship objects placed on the board.
- * The Board class is instantiated twice in the game, once for each player.
- * Board has a single property BOARD_SIZE.
+ * The GameBoardGui is responsible for the main visual interface when playing the game.
+ * Here the players take turns at trying to attack the other fleet.
+ * The game board gui has the following major elements:
+ *      - Each players score
+ *      - Which players turn it is
+ *      - Buttons for seeing the leaderboard, and exiting the game
+ *      - A number of buttons corresponding to the tiles on the board in accordance each players board size.
+ *      // TODO !!
  */
-
 public class GameBoardGui {
-    // GUI related visual variables:
+    // Setting elements of of the game board gui
     private JFrame mainGuiFrame;
     private JPanel informationPanel = new JPanel();
     private JPanel player1Panel = new JPanel();
@@ -35,7 +34,7 @@ public class GameBoardGui {
     private JButton exitButton = new JButton("Quit Game");
     private JButton scoreBoardButton = new JButton("Leaderboard");
     private JPanel boardPanel = new JPanel();
-    private JButton[][] boardButton;
+    private JButton[][] boardButton; // buttons of the board tiles
 
     // Game functionality variables:
     private BattleshipsMain gameMain = new BattleshipsMain();
@@ -206,30 +205,15 @@ public class GameBoardGui {
     }
 
     private Color getMatchingColor(char tileCharacter){
-        Color tileColor;
-        switch(tileCharacter) {
-            case 'f': // fog of war ; grey tile
-                tileColor = Color.GRAY;
-                break;
-            case 'w': // water ; blue tile
-                tileColor = Color.BLUE;
-                break;
-            case 'd': // destroyer ; green tile
-                tileColor = Color.GREEN;
-                break;
-            case 's': // submarine ; pink tile
-                tileColor = Color.MAGENTA;
-                break;
-            case 'b': // battleship ; red tile
-                tileColor = Color.RED;
-                break;
-            case 'c': // carrier ; yellow tile
-                tileColor = Color.YELLOW;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + tileCharacter);
+        switch (tileCharacter) {
+            case 'f' -> { return Color.GRAY; }     // fog of war ; grey tile
+            case 'w' -> { return Color.BLUE; }     // water ; blue tile
+            case 'd' -> { return Color.GREEN; }    // destroyer ; green tile
+            case 's' -> { return Color.MAGENTA; }  // submarine ; pink tile
+            case 'b' -> { return Color.RED;}       // battleship ; red tile
+            case 'c' -> { return Color.YELLOW;}    // carrier ; yellow tile
+            default -> throw new IllegalStateException("Unexpected value: " + tileCharacter);
         }
-        return tileColor;
     }
 
     private class ExitActionListener implements ActionListener {
@@ -267,7 +251,7 @@ public class GameBoardGui {
             try { // Try Catch block is implemented for thread sleep after an attack
                 int[] attackCoordinates = new int[] {xAttackCoordinate, yAttackCoordinate};
                 boolean isValidAttack = gameMain.attackCoordinates(attackCoordinates);
-                if (isValidAttack == true) {
+                if (isValidAttack) {
                     // Next players turn if attack was not on a tile already attacked
                     gameMain.setIsPlayerOnesTurn(!gameMain.getIsPlayerOnesTurn());
 //                    Thread.sleep(500);
@@ -282,8 +266,8 @@ public class GameBoardGui {
                         JOptionPane.showMessageDialog(mainGuiFrame,
                                 PLAYER_ONE_NAME.toUpperCase()+" HAS WON THE GAME!\n\n"+
                                         "Score Overview:\n" +
-                                        PLAYER_ONE_NAME+" = "+String.valueOf(gameMain.getPlayerOneScore())+" points\n"+
-                                        PLAYER_TWO_NAME+" = "+String.valueOf(gameMain.getPlayerTwoScore())+" points",
+                                        PLAYER_ONE_NAME+" = "+gameMain.getPlayerOneScore()+" points\n"+
+                                        PLAYER_TWO_NAME+" = "+gameMain.getPlayerTwoScore()+" points",
                                 "The game is over!",
                                 JOptionPane.INFORMATION_MESSAGE);
                     }else if(gameMain.checkWhoWon() == 0){
@@ -291,16 +275,16 @@ public class GameBoardGui {
                         JOptionPane.showMessageDialog(mainGuiFrame,
                                 PLAYER_TWO_NAME.toUpperCase()+" HAS WON THE GAME!\n\n"+
                                         "Score Overview:\n" +
-                                        PLAYER_ONE_NAME+" = "+String.valueOf(gameMain.getPlayerOneScore())+" points\n"+
-                                        PLAYER_TWO_NAME+" = "+String.valueOf(gameMain.getPlayerTwoScore())+" points",
+                                        PLAYER_ONE_NAME+" = "+gameMain.getPlayerOneScore()+" points\n"+
+                                        PLAYER_TWO_NAME+" = "+gameMain.getPlayerTwoScore()+" points",
                                 "The game is over!",
                                 JOptionPane.INFORMATION_MESSAGE);
                     }else{
                         JOptionPane.showMessageDialog(mainGuiFrame,
                                 "THE GAME IS A TIE!\n\n"+
                                         "Score Overview:\n" +
-                                        PLAYER_ONE_NAME+" = "+String.valueOf(gameMain.getPlayerOneScore())+" points\n"+
-                                        PLAYER_TWO_NAME+" = "+String.valueOf(gameMain.getPlayerTwoScore())+" points",
+                                        PLAYER_ONE_NAME+" = "+gameMain.getPlayerOneScore()+" points\n"+
+                                        PLAYER_TWO_NAME+" = "+gameMain.getPlayerTwoScore()+" points",
                                 "The game is over!",
                                 JOptionPane.INFORMATION_MESSAGE);
                     }
@@ -322,86 +306,48 @@ public class GameBoardGui {
 
     private void displayBoatPlacementErrors(int[] shipPlacementFileErrors) {
         // If the user selected to place the ships using the textfiles check if they were properly loaded
-        if (IS_BOARD_SIZE_FROM_FILE == true) {
+        if (IS_BOARD_SIZE_FROM_FILE) {
             String errorMessageFileOne;
             String errorMessageFileTwo;
             int fileOneErrors = shipPlacementFileErrors[0];
-            switch (fileOneErrors) {
-                case 0:
-                    errorMessageFileOne = "Ship definition text file was loaded successfully.";
-                    break;
-                case 3:
-                    errorMessageFileOne = "Invalid placement of ships: Too few ships defined!";
-                    break;
-                case 4:
-                    errorMessageFileOne = "Invalid placement of ships. Too many ships defined!";
-                    break;
-                case 5:
-                    errorMessageFileOne = "Invalid placement of ships. Too few coordinates specified one of the ships.";
-                    break;
-                case 6:
-                    errorMessageFileOne = "Invalid placement of ships. Too many coordinates specified one of the ships.";
-                    break;
-                case 8:
-                    errorMessageFileOne = "Invalid placement of ships. A ship was possibly spelled incorrectly.";
-                    break;
-                case 9:
-                    errorMessageFileOne = "Invalid placement of ships. Coordinates have to be numbers.";
-                    break;
-                case 10:
-                    errorMessageFileOne = "Error during placement of ships. " +
-                            "Ship definition text file was not found.";
-                    break;
-                case 11:
-                    errorMessageFileOne = "Error during placement of ships. " +
-                            "Ship definition text file had an InputOutputException.";
-                    break;
-                default:
-                    errorMessageFileOne = "Error during placement of ships. " +
-                            "Possible causes:\n" +
-                            "- A ship has been placed off of the board.\n" +
-                            "- A ship has been placed on another ship.\n" +
-                            "- A ship is not continuous.";
-            }
+            errorMessageFileOne = switch (fileOneErrors) {
+                case 0 -> "Ship definition text file was loaded successfully.";
+                case 3 -> "Invalid placement of ships: Too few ships defined!";
+                case 4 -> "Invalid placement of ships. Too many ships defined!";
+                case 5 -> "Invalid placement of ships. Too few coordinates specified one of the ships.";
+                case 6 -> "Invalid placement of ships. Too many coordinates specified one of the ships.";
+                case 8 -> "Invalid placement of ships. A ship was possibly spelled incorrectly.";
+                case 9 -> "Invalid placement of ships. Coordinates have to be numbers.";
+                case 10 -> "Error during placement of ships. " +
+                        "Ship definition text file was not found.";
+                case 11 -> "Error during placement of ships. " +
+                        "Ship definition text file had an InputOutputException.";
+                default -> "Error during placement of ships. " +
+                        "Possible causes:\n" +
+                        "- A ship has been placed off of the board.\n" +
+                        "- A ship has been placed on another ship.\n" +
+                        "- A ship is not continuous.";
+            };
 
             int fileTwoErrors = shipPlacementFileErrors[1];
-            switch (fileTwoErrors) {
-                case 0:
-                    errorMessageFileTwo = "Ship definition text file was loaded successfully.";
-                    break;
-                case 3:
-                    errorMessageFileTwo = "Invalid placement of ships: Too few ships defined!";
-                    break;
-                case 4:
-                    errorMessageFileTwo = "Invalid placement of ships. Too many ships defined!";
-                    break;
-                case 5:
-                    errorMessageFileTwo = "Invalid placement of ships. Too few coordinates specified one of the ships.";
-                    break;
-                case 6:
-                    errorMessageFileTwo = "Invalid placement of ships. Too many coordinates specified one of the ships.";
-                    break;
-                case 8:
-                    errorMessageFileTwo = "Invalid placement of ships. A ship was possibly spelled incorrectly.";
-                    break;
-                case 9:
-                    errorMessageFileTwo = "Invalid placement of ships. Coordinates have to be numbers.";
-                    break;
-                case 10:
-                    errorMessageFileTwo = "Error during placement of ships. " +
-                            "Ship definition text file was not found.";
-                    break;
-                case 11:
-                    errorMessageFileTwo = "Error during placement of ships. " +
-                            "Ship definition text file had an InputOutputException.";
-                    break;
-                default:
-                    errorMessageFileTwo = "Error during placement of ships. " +
-                            "Possible causes:\n" +
-                            "- A ship has been placed off of the board.\n" +
-                            "- A ship has been placed on another ship.\n" +
-                            "- A ship is not continuous.";
-            }
+            errorMessageFileTwo = switch (fileTwoErrors) {
+                case 0 -> "Ship definition text file was loaded successfully.";
+                case 3 -> "Invalid placement of ships: Too few ships defined!";
+                case 4 -> "Invalid placement of ships. Too many ships defined!";
+                case 5 -> "Invalid placement of ships. Too few coordinates specified one of the ships.";
+                case 6 -> "Invalid placement of ships. Too many coordinates specified one of the ships.";
+                case 8 -> "Invalid placement of ships. A ship was possibly spelled incorrectly.";
+                case 9 -> "Invalid placement of ships. Coordinates have to be numbers.";
+                case 10 -> "Error during placement of ships. " +
+                        "Ship definition text file was not found.";
+                case 11 -> "Error during placement of ships. " +
+                        "Ship definition text file had an InputOutputException.";
+                default -> "Error during placement of ships. " +
+                        "Possible causes:\n" +
+                        "- A ship has been placed off of the board.\n" +
+                        "- A ship has been placed on another ship.\n" +
+                        "- A ship is not continuous.";
+            };
             if ((fileOneErrors == 0) & (fileTwoErrors) == 0) {
                 JOptionPane.showMessageDialog(mainGuiFrame,
                         PLAYER_ONE_NAME + "'s ship placement file was loaded successfully.\n\n" +
