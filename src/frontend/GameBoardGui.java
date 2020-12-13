@@ -8,6 +8,17 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+/**
+ * The Board class manages each player's board during the game.
+ * It is responsible for placing ships either randomly or from the user provided text files,
+ *      checking whether or not all the ships on the board have been sunk (game end),
+ *      the number of points received for attacking a specific tile,
+ *      and providing the current status of the board at the start of each turn.
+ * It hosts a number of tile objects relative to the board size, and all the ship objects placed on the board.
+ * The Board class is instantiated twice in the game, once for each player.
+ * Board has a single property BOARD_SIZE.
+ */
+
 public class GameBoardGui {
     // GUI related visual variables:
     private JFrame mainGuiFrame;

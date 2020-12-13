@@ -19,10 +19,23 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 
-public class SettingsGui {
-    // Splash screen:
-    private JFrame splashScreenFrame;
+/**
+ * The SettingsGUI class is responsible for controlling the splash screen of the game.
+ * Here settings are defined before the game begins. It is the first thing the user is presented with when running the
+ * game.
+ * The settings splash screen allows users to input:
+ *      - Player 1's name
+ *      - Player 2's name
+ *      - Which player should go first
+ *      - Whether or not the first player should get a score disadvantage for going first
+ *      - The board dimensions
+ *      - The names of the text files for manually defining the placement of the ships on the board
+ * Buttons are provided to display the start the game, display the leaderboard, view the game rules, and exit.
+ */
 
+public class SettingsGui {
+    // Splash screen elements on the window
+    private JFrame splashScreenFrame;
     private JPanel informationPanel = new JPanel();
     private JPanel optionsPanel = new JPanel();
     private JPanel customScoringPanel = new JPanel();
@@ -43,7 +56,7 @@ public class SettingsGui {
     private JLabel boardRowNumberLabel = new JLabel("  Rows",JLabel.LEFT);
     private JLabel boardColumnNumberLabel = new JLabel("  Columns",JLabel.LEFT);
 
-    // Elements on splash screen:
+    // Interactive elements on the splash screen
     private JButton shipPlacementButton = new JButton("Choose Ship Placement");
     private JCheckBox scoreCompensationButton = new JCheckBox("Score compensation for player going second?");
     private JRadioButton firstPlayerRButton = new JRadioButton("Player 1");
@@ -59,8 +72,7 @@ public class SettingsGui {
     private SpinnerModel spinColumnModel = new SpinnerNumberModel(8, 5, 15, 1);
     private JSpinner numberColumnsSpin = new JSpinner(spinColumnModel);
 
-    // Game functionality variables:
-    private BattleshipsMain gameMain = new BattleshipsMain();
+    // Game functionality variables extracted from the splash screen to be passed to the GameBoardGui on game start
     private boolean isBoardSizeFromFile = false;
     private String playerOneName;
     private String playerTwoName;
@@ -71,6 +83,9 @@ public class SettingsGui {
     private int[] boardSizePlayerTwo;
     private String shipLayoutFileLayout1;
     private String shipLayoutFileLayout2;
+
+    // gameMain instantiation for displaying the leaderboard 
+    private BattleshipsMain gameMain = new BattleshipsMain();
 
     public SettingsGui(){
         splashScreenFrame = new JFrame("Battleship Game: selection screen");
