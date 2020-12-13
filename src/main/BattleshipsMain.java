@@ -1,7 +1,8 @@
-package main;// Import packages:
+// Import packages:
+package main;
 import backend.Board;
 import backend.Player;
-import frontend.SplashGuiManager;
+import frontend.SettingsGui;
 import javax.swing.SwingUtilities;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,7 +14,23 @@ import java.util.*;
 import java.lang.Thread;
 import java.util.SortedMap;
 
-public class BattleshipsGameMain {
+// TODO class comments
+// TODO method comments
+// TODO code comments
+// TODO cleanup of unused variables
+// TODO switch to final variables
+// TODO intellij problems
+
+/**
+ * The game of Battleships.
+ * @author  Victor van Wymeersch R0690930
+ * @since   2020/12/05
+ */
+
+/**
+ * TODO Class description
+ */
+public class BattleshipsMain {
     private static Board boardPlayerOne;
     private static Board boardPlayerTwo;
     private static Player playerOne;
@@ -74,19 +91,19 @@ public class BattleshipsGameMain {
         boolean isValidAttack = true;
         if (isPlayerOnesTurn == false) {  // Player 2 turn
             // See if player gets points for shot
-            int pointsForHit = boardPlayerOne.pointsForHit(attackCoordinates);
-            if ( pointsForHit > 0){
+            int pointsForAttack = boardPlayerOne.pointsForAttack(attackCoordinates);
+            if ( pointsForAttack > 0){
                 if (playWithoutGUI == true) {
                     System.out.println("Hit!");
                     Thread.sleep(700);
                 }
                 // Assign points for hit
-                playerTwo.increaseScore(pointsForHit);
+                playerTwo.increaseScore(pointsForAttack);
                 // Check if game is over
                 if (boardPlayerOne.areAllShipsSunk()){
                     isGameOver = true;
                 }
-            }else if (pointsForHit == -1){
+            }else if (pointsForAttack == -1){
                 isValidAttack = false;
             }else{
                 if (playWithoutGUI == true) {
@@ -95,19 +112,19 @@ public class BattleshipsGameMain {
                 }
             }
         }else{  // Player 1 turn
-            int pointsForHit = boardPlayerTwo.pointsForHit(attackCoordinates);
-            if ( pointsForHit > 0){
+            int pointsForAttack = boardPlayerTwo.pointsForAttack(attackCoordinates);
+            if ( pointsForAttack > 0){
                 if (playWithoutGUI == true) {
                     System.out.println("Hit!");
                     Thread.sleep(700);
                 }
                 // Assign points for hit
-                playerOne.increaseScore(pointsForHit);
+                playerOne.increaseScore(pointsForAttack);
                 // Check if game is over
                 if (boardPlayerTwo.areAllShipsSunk()){
                     isGameOver = true;
                 }
-            }else if (pointsForHit == -1){
+            }else if (pointsForAttack == -1){
                 isValidAttack = false;
             }else{
                 if (playWithoutGUI == true) {
@@ -271,7 +288,7 @@ public class BattleshipsGameMain {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    SplashGuiManager splashGui = new SplashGuiManager();
+                    SettingsGui splashGui = new SettingsGui();
                 }
             });
         // play without GUI (can ignore when marking this project as GUI is fully working).

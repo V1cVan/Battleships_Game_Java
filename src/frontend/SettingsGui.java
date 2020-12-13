@@ -1,5 +1,5 @@
 package frontend;
-import main.BattleshipsGameMain;
+import main.BattleshipsMain;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,7 +19,7 @@ import javax.swing.JOptionPane; // Message dialogs
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 
-public class SplashGuiManager {
+public class SettingsGui {
     // Splash screen:
     private JFrame splashScreenFrame;
 
@@ -60,7 +60,7 @@ public class SplashGuiManager {
     private JSpinner numberColumnsSpin = new JSpinner(spinColumnModel);
 
     // Game functionality variables:
-    private BattleshipsGameMain gameMain = new BattleshipsGameMain();
+    private BattleshipsMain gameMain = new BattleshipsMain();
     private boolean isBoardSizeFromFile = false;
     private String playerOneName;
     private String playerTwoName;
@@ -72,7 +72,7 @@ public class SplashGuiManager {
     private String shipLayoutFileLayout1;
     private String shipLayoutFileLayout2;
 
-    public SplashGuiManager(){
+    public SettingsGui(){
         splashScreenFrame = new JFrame("Battleship Game: selection screen");
 
         // Set splash screen fonts
@@ -248,7 +248,7 @@ public class SplashGuiManager {
                 boardSizePlayerTwo = null;
             }
             splashScreenFrame.dispose();
-            MainGuiManager mainGuiManager = new MainGuiManager(
+            GameBoardGui mainGuiManager = new GameBoardGui(
                     isBoardSizeFromFile,
                     playerOneName,
                     playerTwoName,

@@ -1,16 +1,13 @@
 package frontend;
-import main.BattleshipsGameMain;
-import com.sun.tools.javac.Main;
+import main.BattleshipsMain;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-import java.lang.Thread;
 
 import javax.swing.*;
 
-public class MainGuiManager {
+public class GameBoardGui {
     // GUI related visual variables:
     private JFrame mainGuiFrame;
     private JPanel informationPanel = new JPanel();
@@ -29,7 +26,7 @@ public class MainGuiManager {
     private JButton[][] boardButton;
 
     // Game functionality variables:
-    private BattleshipsGameMain gameMain = new BattleshipsGameMain();
+    private BattleshipsMain gameMain = new BattleshipsMain();
     private final boolean IS_BOARD_SIZE_FROM_FILE;
     private final String PLAYER_ONE_NAME;
     private final String PLAYER_TWO_NAME;
@@ -39,16 +36,16 @@ public class MainGuiManager {
     private final int[] BOARD_SIZE_PLAYER_ONE;
     private final int[] BOARD_SIZE_PLAYER_TWO;
 
-    public MainGuiManager(boolean isBoardSizeFrmFile,
-                          String playerOneNme,
-                          String playerTwoNme,
-                          boolean playerOneFirst,
-                          boolean playerOneDisadvantaged,
-                          boolean playerTwoDisadvantaged,
-                          int[] boardSzePlayerOne,
-                          int[] boardSzePlayerTwo,
-                          String playerOneLayoutFileNme,
-                          String playerTwoLayoutFileNme) {
+    public GameBoardGui(boolean isBoardSizeFrmFile,
+                        String playerOneNme,
+                        String playerTwoNme,
+                        boolean playerOneFirst,
+                        boolean playerOneDisadvantaged,
+                        boolean playerTwoDisadvantaged,
+                        int[] boardSzePlayerOne,
+                        int[] boardSzePlayerTwo,
+                        String playerOneLayoutFileNme,
+                        String playerTwoLayoutFileNme) {
 
         IS_BOARD_SIZE_FROM_FILE = isBoardSizeFrmFile;
         PLAYER_ONE_NAME = playerOneNme;
