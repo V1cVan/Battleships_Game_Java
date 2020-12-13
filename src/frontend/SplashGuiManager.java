@@ -17,6 +17,7 @@ import javax.swing.SpinnerModel;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane; // Message dialogs
 import javax.swing.JPanel;
+import javax.swing.ImageIcon;
 
 public class SplashGuiManager {
     // Splash screen:
@@ -34,6 +35,7 @@ public class SplashGuiManager {
     // Labels on splash screen:
     private JLabel battleShipTitleLabel = new JLabel("Welcome to Battleships");
     private JLabel splashInformationLabel = new JLabel("Please select your options and get started");
+    private JLabel imageLabel = new JLabel();
     private JLabel playerOneNameLabel = new JLabel("Player 1 name:");
     private JLabel playerTwoNameLabel = new JLabel("Player 2 name:");
     private JLabel firstPlayerLabel = new JLabel("Player to go first:");
@@ -93,12 +95,16 @@ public class SplashGuiManager {
         startGameButton.setFont(new Font("", Font.BOLD, 16));
 
         // Splash screen information panel
-        informationPanel.add(battleShipTitleLabel);
-        battleShipTitleLabel.setHorizontalAlignment(0);
-        informationPanel.add(splashInformationLabel);
-        splashInformationLabel.setHorizontalAlignment(0);
         informationPanel.setBorder(BorderFactory.createEmptyBorder(10,30,10,30));
-        informationPanel.setLayout(new GridLayout(2,1));
+        informationPanel.setLayout(new BorderLayout());
+        informationPanel.add(battleShipTitleLabel,BorderLayout.NORTH);
+        battleShipTitleLabel.setHorizontalAlignment(0);
+        informationPanel.add(splashInformationLabel,BorderLayout.CENTER);
+        splashInformationLabel.setHorizontalAlignment(0);
+        ImageIcon battleshipImage = new ImageIcon(this.getClass().getResource("splash.gif"));
+        imageLabel.setIcon(battleshipImage);
+        imageLabel.setHorizontalAlignment(JLabel.CENTER);
+        informationPanel.add(imageLabel,BorderLayout.SOUTH);
 
         // Splash screen game options panel
         optionsPanel.setBorder(BorderFactory.createEmptyBorder(10,30,10,30));
@@ -133,37 +139,36 @@ public class SplashGuiManager {
         optionsPanel.add(boardSizePanel);
 
         // Splash screen buttons panel
-        buttonsPanel.setLayout(new GridLayout(3,1));
-        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(0,0,30,0));
-        shipPlacementButton.setPreferredSize(new Dimension(300,50));
+        buttonsPanel.setLayout(new BorderLayout());
+        buttonsPanel.setBorder(BorderFactory.createEmptyBorder(0,30,30,30));
+        shipPlacementButton.setPreferredSize(new Dimension(615,40));
         placeShipsPanel.add(shipPlacementButton);
-        buttonsPanel.add(placeShipsPanel);
+        buttonsPanel.add(placeShipsPanel, BorderLayout.NORTH);
         shipPlacementButton.addActionListener(new ShipPlacementActionListener());
 
         startPanel.add(startGameButton);
-        startGameButton.setPreferredSize(new Dimension(300,50));
-        buttonsPanel.add(startPanel);
+        startGameButton.setPreferredSize(new Dimension(615,100));
+        buttonsPanel.add(startPanel,BorderLayout.CENTER);
         startGameButton.addActionListener(new StartButtonActionListener());
 
-        extrasPanel.setLayout(new GridLayout(1,3));
-        extrasPanel.setBorder(BorderFactory.createEmptyBorder(15,60,30,60));
-        extrasPanel.add(rulesButton);
-        extrasPanel.add(scoreboardButton);
-        extrasPanel.add(exitButton);
-        rulesButton.setPreferredSize(new Dimension(50,20));
+
+        extrasPanel.add(rulesButton, BorderLayout.LINE_START);
+        rulesButton.setPreferredSize(new Dimension(200,50));
+        extrasPanel.add(scoreboardButton, BorderLayout.CENTER);
+        scoreboardButton.setPreferredSize(new Dimension(200,50));
+        extrasPanel.add(exitButton, BorderLayout.LINE_END);
+        exitButton.setPreferredSize(new Dimension(200,50));
         rulesButton.addActionListener(new GameRulesActionListener());
-        scoreboardButton.setPreferredSize(new Dimension(50,20));
         scoreboardButton.addActionListener(new ScoreboardActionListener());
-        exitButton.setPreferredSize(new Dimension(50,20));
         exitButton.addActionListener(new ExitActionListener());
-        buttonsPanel.add(extrasPanel);
+        buttonsPanel.add(extrasPanel, BorderLayout.SOUTH);
 
         // Final splash screen layout
-        splashScreenFrame.setLayout(new GridLayout(3,1));
+        splashScreenFrame.setLayout(new BorderLayout());
         splashScreenFrame.setLocation(1000,100);
-        splashScreenFrame.add(informationPanel);
-        splashScreenFrame.add(optionsPanel);
-        splashScreenFrame.add(buttonsPanel);
+        splashScreenFrame.add(informationPanel, BorderLayout.NORTH);
+        splashScreenFrame.add(optionsPanel, BorderLayout.CENTER);
+        splashScreenFrame.add(buttonsPanel, BorderLayout.SOUTH);
         splashScreenFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         splashScreenFrame.pack();
         splashScreenFrame.setVisible(true);
