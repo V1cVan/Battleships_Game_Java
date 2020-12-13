@@ -1,21 +1,21 @@
 package frontend;
+
 import main.BattleshipsMain;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
-import javax.swing.JButton; // Buttons
-import javax.swing.JLabel; // Labels
-import javax.swing.JTextField; // Entering data for ship placement
-import javax.swing.JSpinner; // Spinner for board size
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.JCheckBox; // Disadvantage for fist player
-import javax.swing.JRadioButton; // Start player selection
-import javax.swing.ButtonGroup; // For radio button selection
+import javax.swing.JCheckBox;
+import javax.swing.JRadioButton;
+import javax.swing.ButtonGroup;
 import javax.swing.SpinnerModel;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane; // Message dialogs
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 

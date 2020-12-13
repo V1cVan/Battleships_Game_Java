@@ -1,4 +1,5 @@
-package backend;// Import packages:
+package backend;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -336,7 +337,7 @@ public class Board {
         return loadShipsErrorNumber;
     }
 
-    public void setShipPlacement() {
+    private void setShipPlacement() {
         /*
          * Sets all the ship locations on the board's tiles.
          * Called after ships coordinates are randomly defined and if they are read from the user provided text files.

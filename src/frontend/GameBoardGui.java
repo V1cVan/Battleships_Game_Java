@@ -1,4 +1,5 @@
 package frontend;
+
 import main.BattleshipsMain;
 
 import java.awt.*;
@@ -72,9 +73,6 @@ public class GameBoardGui {
         // Initialise the two players in the backend
         gameMain.initPlayers(PLAYER_ONE_NAME, PLAYER_TWO_NAME,
                 IS_PLAYER_ONE_DISADVANTAGED, IS_PLAYER_TWO_DISADVANTAGED);
-
-        // Load leaderboard file:
-        gameMain.loadLeaderboardFromFile();
 
         // Place ships on the boards, either randomly or from the text file definitions
         int[] shipPlacementFileErrors = gameMain.placeShips(
@@ -156,7 +154,7 @@ public class GameBoardGui {
         player2ScoreLabel.setText(String.format("%.2f",gameMain.getPlayerTwoScore()));
 
         // Get current attacked players board in characters
-        char[][] boardCharacters = gameMain.getCurrentBoardChars();
+        char[][] boardCharacters = gameMain.getCurrentPlayerBoardChars();
 
         // Create board tiles
         if (gameMain.getIsPlayerOnesTurn()){

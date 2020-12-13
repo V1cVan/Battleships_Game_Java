@@ -1,5 +1,5 @@
-// Import packages:
 package main;
+
 import backend.Board;
 import backend.Player;
 import frontend.SettingsGui;
@@ -18,53 +18,78 @@ import java.util.SortedMap;
 // TODO method comments
 // TODO code comments
 // TODO cleanup of unused variables
+// TODO ensure privately used methods are declared as private
 // TODO switch to final variables
 // TODO intellij problems
 
-/**
+/*
  * The game of Battleships.
- * @author  Victor van Wymeersch R0690930
+ * @author  Victor van Wymeersch - R0690930
  * @since   2020/12/05
  */
 
 /**
- * TODO Class description
+ * The BattleshipsMain handles the main functionality of the game during play.
+ * It is responsible for handling each of the player objects and their corresponding board objects,
+ *      who's turn it is during play, reading and writing the leaderboard textfile, determining who won the game,
+ *      managing the operations associated with attacking a coordinate, and running the game/GUI.
+ * The Battleships main class connects the frontend of the application to it's backend.
  */
+
 public class BattleshipsMain {
+    // Game objects during play
     private static Board boardPlayerOne;
     private static Board boardPlayerTwo;
     private static Player playerOne;
     private static Player playerTwo;
-    private static boolean isPlayerOnesTurn;
+    private static boolean isPlayerOnesTurn;                        // Defines who's turn it is
     private static boolean isGameOver = false;
-    private static SortedMap<Integer, String> playersOnLeaderboard
-            = new TreeMap<Integer, String>(Collections.reverseOrder());
-
-    // You can adjust this boolean to disable the Gui and play from the console instead.
-    // (game functionality is fully present without GUI interface)
-    private static boolean playWithoutGUI = false;
+    private static SortedMap<Integer, String> playersOnLeaderboard  // Variable containing leaderboard
+            = new TreeMap<>(Collections.reverseOrder());
+    /* You can adjust this boolean to disable the Gui and play from the console instead.
+       (game functionality is fully present without GUI interface) */
+    private final static boolean playWithGUI = false;
 
     public static void initBoards(int[] boardSizePlayerOne, int[] boardSizePlayerTwo){
+        /*
+         * Initialises the two game boards and assigns them to local board objects.
+         * @param board sizes of each player. int[] = (xDimension, yDimension)
+         * @return None
+         */
         boardPlayerOne = new Board(boardSizePlayerOne);
         boardPlayerTwo = new Board(boardSizePlayerTwo);
     }
 
+    public static void initPlayers(String playerOneName, String playerTwoName,
+                                   boolean isPlayerOneDisadvantaged, boolean isPlayerTwoDisadvantaged){
+        /*
+         * Initialises the players based on the settings received from the GUI and assigns them the local player objects
+         * @param Names of each of the players and whether or not they get a disadvantage for going first.
+         * @return None
+         */
+        playerOne = new Player(playerOneName, isPlayerOneDisadvantaged);
+        playerTwo = new Player(playerTwoName, isPlayerTwoDisadvantaged);
+    }
+
     public static int[] placeShips(boolean isPlaceShipsFromFile, String playerOneFileName, String playerTwoFileName){
-        int[] shipPlacementFileErrors = new int[] {0,0};
-        if (isPlaceShipsFromFile == true){
+        /*
+         * Places the ships on the board based either randomly, or from user defined text files based on the options
+         *      chosen on the setting GUI.
+         * @param isPlaceShipsFromFile: if ships should be placed randomly or from text files.
+         *        playerOneFileName, playerTwoFileName: names of the files as defined in the settings gui
+         * @return shipPlacementFileErrors: integers corresponding to types of errors found when placing the ships from
+         *                                  the text files, or {0,0} if no errors were found in both files.
+         */
+
+        int[] shipPlacementFileErrors = new int[] {0,0}; // {errors in player 1 file, errors in player 2 file}
+        if (isPlaceShipsFromFile == true){               // Place ships from specified files
             shipPlacementFileErrors[0] = boardPlayerOne.readShipPlacementFile(playerOneFileName);
             shipPlacementFileErrors[1] = boardPlayerTwo.readShipPlacementFile(playerTwoFileName);
-        }else{ // Place ships randomly
+        }else{                                           // Place ships randomly
             boardPlayerOne.placeShipsRandomly();
             boardPlayerTwo.placeShipsRandomly();
         }
         return shipPlacementFileErrors;
-    }
-
-    public static void initPlayers(String playerOneName, String playerTwoName,
-                           boolean isPlayerOneDisadvantaged, boolean isPlayerTwoDisadvantaged){
-        playerOne = new Player(playerOneName, isPlayerOneDisadvantaged);
-        playerTwo = new Player(playerTwoName, isPlayerTwoDisadvantaged);
     }
 
     public double getPlayerOneScore(){
@@ -79,21 +104,35 @@ public class BattleshipsMain {
         return isPlayerOnesTurn;
     }
 
-    public void setIsPlayerOnesTurn(boolean isPlayerOnesTurn){
-        this.isPlayerOnesTurn = isPlayerOnesTurn;
+    public void setIsPlayerOnesTurn(boolean isPlayerOneTurn){
+        /*
+         * Returns who's turn it is in the game. isPlayerOnesTurn == false if it is player 2's turn.
+         */
+        isPlayerOnesTurn = isPlayerOneTurn;
     }
 
     public boolean getIsGameOver(){
+        /*
+         * Returns the game's status corresponding to whether or not all the ships have been sunk on a board.
+         */
         return isGameOver;
     }
 
     public static boolean attackCoordinates(int[] attackCoordinates) throws InterruptedException {
+        /*
+         * Process the action of attacking a set of coordinates on the board.
+         * Checks if the attack was valid, gets the points for the attack, increases player scores,
+         *      and checks if the game is over.
+         * @param attackCoordinates: The coordinates of the attacked tile on the board corresponding to the GUI
+         *                           click location
+         * @return Boolean value corresponding to if the attack was valid. If false the player gets to attack again.
+         */
         boolean isValidAttack = true;
         if (isPlayerOnesTurn == false) {  // Player 2 turn
-            // See if player gets points for shot
+            // See if player 2 gets points for shot taken at the attack coordinates
             int pointsForAttack = boardPlayerOne.pointsForAttack(attackCoordinates);
             if ( pointsForAttack > 0){
-                if (playWithoutGUI == true) {
+                if (playWithGUI == false) {
                     System.out.println("Hit!");
                     Thread.sleep(700);
                 }
@@ -106,15 +145,16 @@ public class BattleshipsMain {
             }else if (pointsForAttack == -1){
                 isValidAttack = false;
             }else{
-                if (playWithoutGUI == true) {
+                if (playWithGUI == false) {
                     System.out.println("Miss!");
                     Thread.sleep(700);
                 }
             }
         }else{  // Player 1 turn
+            // See if player 1 gets points for shot taken at the attack coordinates
             int pointsForAttack = boardPlayerTwo.pointsForAttack(attackCoordinates);
             if ( pointsForAttack > 0){
-                if (playWithoutGUI == true) {
+                if (playWithGUI == false) {
                     System.out.println("Hit!");
                     Thread.sleep(700);
                 }
@@ -127,7 +167,7 @@ public class BattleshipsMain {
             }else if (pointsForAttack == -1){
                 isValidAttack = false;
             }else{
-                if (playWithoutGUI == true) {
+                if (playWithGUI == false) {
                     System.out.println("Miss!");
                     Thread.sleep(700);
                 }
@@ -136,7 +176,12 @@ public class BattleshipsMain {
         return isValidAttack;
     }
 
-    public char[][] getCurrentBoardChars(){
+    public char[][] getCurrentPlayerBoardChars(){
+        /*
+         * Provides the current board representation as tensor of characters based on who's turn it is.
+         * @param None
+         * @return Character representation of board being attacked
+         */
         char[][] boardCharacters;
         if (isPlayerOnesTurn){// return player 2's board color characters of the tiles
             boardCharacters = boardPlayerTwo.getCharBasedBoard();
@@ -147,6 +192,14 @@ public class BattleshipsMain {
     }
 
     public static int checkWhoWon(){
+        /*
+         * Checks who won the game by comparing the player scores.
+         * @param None
+         * @return Integer representing game result: 1  = player 1 won the game
+         *                                           0  = player 2 won the game
+         *                                           -1 = game was a draw
+         */
+
         int didPlayerOneWin;
         if (playerOne.getScore()>playerTwo.getScore()){
             // Player one won the game
@@ -162,18 +215,18 @@ public class BattleshipsMain {
     }
 
     public static int[] readBoardSize(String filename) {
-        /**
-         Reads the board size from the provided files.
-         @param filename = file read from
-         @return boardSize
-         @throws FileNotFoundException, IOException, Invalid boardSize
+        /*
+         * Reads the board size from the first line of the provided text files.
+         * @param filename of the textfile to be read from
+         * @return boardSize as (xDimension, yDimension)
+         * @throws FileNotFoundException, IOException, Invalid boardSize specification
          */
 
-        // boardDimension defaults to 8 if not successfully read from file
+        // boardDimension defaults to 8 if not successfully read from file so that user menu experience is improved
         int boardDimension = 8;
         try(
                 FileReader file = new FileReader(filename);
-                Scanner scan = new Scanner(file);)
+                Scanner scan = new Scanner(file))
         {
             String line = scan.nextLine();
             line = line.strip();
@@ -181,11 +234,11 @@ public class BattleshipsMain {
                 try {
                     boardDimension = Integer.parseInt(line);
                 }catch(NumberFormatException numberFormatException){
-                    System.out.println("Problem with board size definition in gameSettings*.txt");
+                    System.out.println("Problem with board size definition in gameSettings textfile");
                     System.out.println("Setting default board size of (Xsize,Ysize) = (8,8)");
                 }
             }else { // invalid board size
-                System.out.println("Problem with board size definition in gameSettings*.txt");
+                System.out.println("Problem with board size definition in gameSettings textfile");
                 System.out.println("Setting default board size of (Xsize,Ysize) = (8,8)");
             }
         } catch(FileNotFoundException fileNotFoundException){
@@ -197,11 +250,16 @@ public class BattleshipsMain {
             System.out.println("Setting default board size of (Xsize,Ysize) = (8,8)");
             ioException.printStackTrace();
         }
-        int[] boardSize = new int[] {boardDimension, boardDimension};
-        return boardSize;
+
+        return new int[] {boardDimension, boardDimension};
     }
 
-    public void loadLeaderboardFromFile(){
+    private void loadLeaderboardFromFile(){
+        /*
+         * Reads the leaderboard text file into the locally defined leaderboard class variable.
+         * @throws FileNotFoundException, IOException
+         */
+
         try(
                 FileReader file = new FileReader("src/datafiles/leaderboard.txt");
                 Scanner scan = new Scanner(file))
@@ -219,60 +277,72 @@ public class BattleshipsMain {
     }
 
     public String getLeaderboard(){
+        /*
+         * Returns a formatted string containing players on the games leaderboard.
+         * @param None
+         * @return Sorted leaderboard in string format to be displayed on a GUI message to the user
+         */
+
         loadLeaderboardFromFile();
         String leaderBoard = "";
         Set set = playersOnLeaderboard.entrySet();
         Iterator i = set.iterator();
 
-        // Loop through map and add to leaderboard string
+        // Loop players on leaderboard map and write's keys and values to a leaderboard string with proper formatting
         int positionCounter = 1;
         while (i.hasNext()) {
             Map.Entry tempMap = (Map.Entry)i.next();
-            leaderBoard = leaderBoard + String.valueOf(positionCounter) + ".  "
-                    + tempMap.getValue()+ " ("+String.valueOf(tempMap.getKey()) +" wins)\n";
+            leaderBoard = leaderBoard + positionCounter + ".  "
+                    + tempMap.getValue()+ " ("+ tempMap.getKey() +" wins)\n";
             positionCounter ++;
         }
         return leaderBoard;
     }
 
     public void addWinnerToLeaderboard(String playerName){
+        /*
+         * Rewrites the leaderboard text file to include the new winner of the game just played.
+         * If the winner's name already exists on the leaderboard his score is increased.
+         * @param Player's name that just wont the game.
+         * @return None
+         */
+
         Set set = playersOnLeaderboard.entrySet();
         Iterator i = set.iterator();
 
-        // Loop through leaderboard
         String playerNameOriginal = playerName;
         int newPlayerNumWins = 1;
         boolean existsOnScoreboard = false;
         playerName = playerName.toLowerCase();
 
+        // Loop players on leaderboard map and check if the player already exists on the leaderboard
         while (i.hasNext()) {
             Map.Entry tempMap = (Map.Entry)i.next();
             String name = String.valueOf(tempMap.getValue()).toLowerCase().strip();
             int oldPlayerNumberWins = (int) tempMap.getKey();
             if (name.equals(playerName)){
                 existsOnScoreboard = true;
+                // increase the players number of wins if he/she exists on the leaderboard
                 newPlayerNumWins = oldPlayerNumberWins +1;
             }
         }
         if (existsOnScoreboard){
             playersOnLeaderboard.remove(newPlayerNumWins-1);
-            playersOnLeaderboard.put(newPlayerNumWins, playerNameOriginal);
-        }else{
-            playersOnLeaderboard.put(newPlayerNumWins, playerNameOriginal);
         }
+        playersOnLeaderboard.put(newPlayerNumWins, playerNameOriginal);
 
+        // Write new leaderboard to the leaderboard text file
         try(FileWriter fileWriter = new FileWriter("src/datafiles/leaderboard.txt", false);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             PrintWriter output = new PrintWriter(bufferedWriter))
         {
             Set writeSet = playersOnLeaderboard.entrySet();
-            Iterator writeIterator = writeSet.iterator();
-
-            while (writeIterator.hasNext()) {
-                Map.Entry tempMap = (Map.Entry)writeIterator.next();
+            // Write player names and their numbers of wins to each line of the leaderboard textfile
+            for (Object o : writeSet) {
+                Map.Entry tempMap = (Map.Entry) o;
                 String name = String.valueOf(tempMap.getValue()).toLowerCase().strip();
                 int wins = (int) tempMap.getKey();
-                output.println(name +", "+String.valueOf(wins));
+                output.println(name + ", " + wins);
             }
         } catch(FileNotFoundException fileNotFoundException){
             fileNotFoundException.printStackTrace();
@@ -283,20 +353,27 @@ public class BattleshipsMain {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        // play game with GUI
-        if (playWithoutGUI == false) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    SettingsGui splashGui = new SettingsGui();
-                }
-            });
-        // play without GUI (can ignore when marking this project as GUI is fully working).
+        /*
+         * Main method of application. Runs the game either in GUI or console-based format.
+         */
+
+
+        // Play game with GUI
+        if (playWithGUI) {
+            SwingUtilities.invokeLater(SettingsGui::new);
+
+
+        /*
+        !NOTE!
+        The rest of the code below here is for playing the game without a GUI !!!
+        (This should be ignored when marking this project as the GUI is fully implemented and without errors).
+        Playing the game without the GUI does not have as much functionality and error checking as playing the game
+        with the GUI.
+        */
         }else{
             // Initialise player boards:
-            String gameFilePlayer1 = new String("src/datafiles/gameSettingsPlayer1.txt");
-            String gameFilePlayer2 = new String("src/datafiles/gameSettingsPlayer2.txt");
-            String playerScoreboardFile = new String("src/datafiles/playerScoreboard.txt");
+            String gameFilePlayer1 = "src/datafiles/gameSettingsPlayer1.txt";
+            String gameFilePlayer2 = "src/datafiles/gameSettingsPlayer2.txt";
 
             boolean boardSizeFromFile = false;
             int[] boardSizePlayer1;
@@ -329,14 +406,13 @@ public class BattleshipsMain {
             initPlayers(playerOneName, playerTwoName, false, false);
 
             // Play the game:
-
             isPlayerOnesTurn = true;
             Scanner userInput = new Scanner(System.in);
             System.out.println("\nGame has begun ... \n");
             while (isGameOver == false) {
                 System.out.println("Current Score:");
-                System.out.println(playerOne.getName()+" = "+ String.valueOf(playerOne.getScore()));
-                System.out.println(playerTwo.getName()+" = "+ String.valueOf(playerTwo.getScore())+"\n");
+                System.out.println(playerOne.getName()+" = "+ playerOne.getScore());
+                System.out.println(playerTwo.getName()+" = "+ playerTwo.getScore()+"\n");
                 if (isPlayerOnesTurn == false) {  // Player 2 turn
                     System.out.println(playerTwo.getName()+"'s turn! Take your shot.\n");
                     System.out.println(boardPlayerOne.getTextBasedBoard());
@@ -355,6 +431,7 @@ public class BattleshipsMain {
 
                 attackCoordinates(coordinates);
 
+                isPlayerOnesTurn = !isPlayerOnesTurn;
             } // end of game loop
 
             // Check if player one won the game 1=yes, 0=no, -1=draw
