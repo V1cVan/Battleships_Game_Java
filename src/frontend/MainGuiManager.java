@@ -1,3 +1,5 @@
+package frontend;
+import main.BattleshipsGameMain;
 import com.sun.tools.javac.Main;
 
 import java.awt.*;
@@ -152,8 +154,9 @@ public class MainGuiManager {
 
     public void createBoardGui(){
         // Set current score
-        player1ScoreLabel.setText(Integer.toString(gameMain.getPlayerOneScore()));
-        player2ScoreLabel.setText(Integer.toString(gameMain.getPlayerTwoScore()));
+
+        player1ScoreLabel.setText(String.format("%.2f",gameMain.getPlayerOneScore()));
+        player2ScoreLabel.setText(String.format("%.2f",gameMain.getPlayerTwoScore()));
 
         // Get current attacked players board in characters
         char[][] boardCharacters = gameMain.getCurrentBoardChars();
@@ -181,9 +184,9 @@ public class MainGuiManager {
             currentTurnLabel.setText(PLAYER_TWO_NAME);
             // Set board of player 1
             boardButton = new JButton[BOARD_SIZE_PLAYER_ONE[0]][BOARD_SIZE_PLAYER_ONE[1]];
-            boardPanel.setLayout(new GridLayout(BOARD_SIZE_PLAYER_TWO[0],BOARD_SIZE_PLAYER_TWO[1]));
-            for (int xTileIndex=0; xTileIndex<BOARD_SIZE_PLAYER_TWO[0]; xTileIndex++){
-                for (int yTileIndex=0; yTileIndex<BOARD_SIZE_PLAYER_TWO[1]; yTileIndex++){
+            boardPanel.setLayout(new GridLayout(BOARD_SIZE_PLAYER_ONE[0],BOARD_SIZE_PLAYER_ONE[1]));
+            for (int xTileIndex=0; xTileIndex<BOARD_SIZE_PLAYER_ONE[0]; xTileIndex++){
+                for (int yTileIndex=0; yTileIndex<BOARD_SIZE_PLAYER_ONE[1]; yTileIndex++){
                     boardButton[xTileIndex][yTileIndex] = new JButton();
                     boardButton[xTileIndex][yTileIndex].setSize(50,50);
                     boardButton[xTileIndex][yTileIndex].addActionListener(
@@ -302,7 +305,6 @@ public class MainGuiManager {
                                     leaderboard,
                             "Local Leaderboard",
                             JOptionPane.INFORMATION_MESSAGE);
-                    Thread.sleep(1500);
                     System.exit(0);
                 }
 

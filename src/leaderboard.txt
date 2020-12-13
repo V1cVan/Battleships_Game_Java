@@ -1,2 +1,0 @@
-lecturer, 5
-student, 3

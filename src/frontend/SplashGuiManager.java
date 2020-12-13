@@ -1,3 +1,5 @@
+package frontend;
+import main.BattleshipsGameMain;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,7 +32,7 @@ public class SplashGuiManager {
     private JPanel extrasPanel = new JPanel();
 
     // Labels on splash screen:
-    private JLabel battleShipTitleLabel = new JLabel("Welcome to Battleship");
+    private JLabel battleShipTitleLabel = new JLabel("Welcome to Battleships");
     private JLabel splashInformationLabel = new JLabel("Please select your options and get started");
     private JLabel playerOneNameLabel = new JLabel("Player 1 name:");
     private JLabel playerTwoNameLabel = new JLabel("Player 2 name:");
@@ -72,14 +74,14 @@ public class SplashGuiManager {
         splashScreenFrame = new JFrame("Battleship Game: selection screen");
 
         // Set splash screen fonts
-        battleShipTitleLabel.setFont(new Font("", Font.PLAIN, 30));
+        battleShipTitleLabel.setFont(new Font("", Font.BOLD, 30));
         splashInformationLabel.setFont(new Font("", Font.PLAIN, 18));
-        boardInformationLabel.setFont(new Font("", Font.PLAIN, 16));
+        boardInformationLabel.setFont(new Font("", Font.BOLD, 16));
         boardRowNumberLabel.setFont(new Font("", Font.PLAIN, 16));
         boardColumnNumberLabel.setFont(new Font("", Font.PLAIN, 16));
-        playerOneNameLabel.setFont(new Font("", Font.PLAIN, 16));
+        playerOneNameLabel.setFont(new Font("", Font.BOLD, 16));
         playerOneNameBox.setFont(new Font("", Font.PLAIN, 16));
-        playerTwoNameLabel.setFont(new Font("", Font.PLAIN, 16));
+        playerTwoNameLabel.setFont(new Font("", Font.BOLD, 16));
         playerTwoNameBox.setFont(new Font("", Font.PLAIN, 16));
         firstPlayerLabel.setFont(new Font("", Font.PLAIN, 16));
         firstPlayerRButton.setFont(new Font("", Font.PLAIN, 14));
@@ -88,6 +90,7 @@ public class SplashGuiManager {
         numberRowsSpin.setFont(new Font("", Font.PLAIN, 14));
         numberColumnsSpin.setFont(new Font("", Font.PLAIN, 14));
         scoreCompensationButton.setFont(new Font("", Font.PLAIN, 14));
+        startGameButton.setFont(new Font("", Font.BOLD, 16));
 
         // Splash screen information panel
         informationPanel.add(battleShipTitleLabel);
@@ -258,10 +261,8 @@ public class SplashGuiManager {
         private JFrame boatLayoutFrame;
         private JPanel player1Panel = new JPanel();
         private JPanel player2Panel = new JPanel();
-        private JLabel player1Label = new JLabel("Player 1 boat layout file name :\n" +
-                "(place in <gamedirectory>/src/");
-        private JLabel player2Label = new JLabel("Player 2 boat layout file name :\n" +
-                "(place in <gamedirectory>/src/");
+        private JLabel player1Label = new JLabel("Player 1 boat layout file name:");
+        private JLabel player2Label = new JLabel("Player 2 boat layout file name:");
         private JTextField player1PlacementField = new JTextField();
         private JTextField player2PlacementField = new JTextField();
         private JButton confirmPlacementButton = new JButton("Load ship placement file");
@@ -281,7 +282,7 @@ public class SplashGuiManager {
             player1Panel.add(player1Label);
             player1Panel.add(player1PlacementField);
             player1PlacementField.setPreferredSize(new Dimension(200,50));
-            player1PlacementField.setText("src/gameSettingsPlayer1.txt");
+            player1PlacementField.setText("gameSettingsPlayer1.txt");
             player1PlacementField.setFont(new Font("",Font.PLAIN,15));
             player1Panel.add(confirmPlacementButton);
             confirmPlacementButton.addActionListener( new SaveActionListener());
@@ -292,7 +293,7 @@ public class SplashGuiManager {
             player2Panel.add(player2Label);
             player2Panel.add(player2PlacementField);
             player2PlacementField.setPreferredSize(new Dimension(200,50));
-            player2PlacementField.setText("src/gameSettingsPlayer2.txt");
+            player2PlacementField.setText("gameSettingsPlayer2.txt");
             player2PlacementField.setFont(new Font("",Font.PLAIN,15));
             player2Panel.add(closeButton);
             closeButton.addActionListener(new ActionListener() {
@@ -318,8 +319,8 @@ public class SplashGuiManager {
         private class SaveActionListener implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
-                shipLayoutFileLayout1 = player1PlacementField.getText();
-                shipLayoutFileLayout2 = player2PlacementField.getText();
+                shipLayoutFileLayout1 = "src/datafiles/"+player1PlacementField.getText();
+                shipLayoutFileLayout2 = "src/datafiles/"+player2PlacementField.getText();
                 isBoardSizeFromFile = true;
             }
         }

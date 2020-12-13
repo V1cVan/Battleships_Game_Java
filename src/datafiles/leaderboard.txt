@@ -1,0 +1,2 @@
+lecturer, 101
+student, 56

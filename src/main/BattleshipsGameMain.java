@@ -1,6 +1,7 @@
-// Import packages:
+package main;// Import packages:
 import backend.Board;
 import backend.Player;
+import frontend.SplashGuiManager;
 import javax.swing.SwingUtilities;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,14 +14,6 @@ import java.lang.Thread;
 import java.util.SortedMap;
 
 public class BattleshipsGameMain {
-    // DONE Different board sizes
-    // DONE Implement random ship placement
-    // DONE Implement ship placement via input file
-    // DONE Implement scoring system x2 (different scales)
-    // DONE Playing loop
-    // TODO Saving previous game scores
-    // TODO Implement GUI and check integration!
-
     private static Board boardPlayerOne;
     private static Board boardPlayerTwo;
     private static Player playerOne;
@@ -57,11 +50,11 @@ public class BattleshipsGameMain {
         playerTwo = new Player(playerTwoName, isPlayerTwoDisadvantaged);
     }
 
-    public int getPlayerOneScore(){
+    public double getPlayerOneScore(){
         return playerOne.getScore();
     }
 
-    public int getPlayerTwoScore(){
+    public double getPlayerTwoScore(){
         return playerTwo.getScore();
     }
 
@@ -193,7 +186,7 @@ public class BattleshipsGameMain {
 
     public void loadLeaderboardFromFile(){
         try(
-                FileReader file = new FileReader("src/leaderboard.txt");
+                FileReader file = new FileReader("src/datafiles/leaderboard.txt");
                 Scanner scan = new Scanner(file))
         {
             while (scan.hasNext()) {
@@ -234,8 +227,7 @@ public class BattleshipsGameMain {
         int newPlayerNumWins = 1;
         boolean existsOnScoreboard = false;
         playerName = playerName.toLowerCase();
-        int index = 0;
-        int counter = 0;
+
         while (i.hasNext()) {
             Map.Entry tempMap = (Map.Entry)i.next();
             String name = String.valueOf(tempMap.getValue()).toLowerCase().strip();
@@ -243,22 +235,16 @@ public class BattleshipsGameMain {
             if (name.equals(playerName)){
                 existsOnScoreboard = true;
                 newPlayerNumWins = oldPlayerNumberWins +1;
-                index = counter;
             }
-            counter ++;
         }
         if (existsOnScoreboard){
-            System.out.println(index);
-            System.out.println(playersOnLeaderboard);
             playersOnLeaderboard.remove(newPlayerNumWins-1);
-            System.out.println(playersOnLeaderboard);
             playersOnLeaderboard.put(newPlayerNumWins, playerNameOriginal);
-            System.out.println(playersOnLeaderboard);
         }else{
             playersOnLeaderboard.put(newPlayerNumWins, playerNameOriginal);
         }
 
-        try(FileWriter fileWriter = new FileWriter("src/leaderboard.txt", false);
+        try(FileWriter fileWriter = new FileWriter("src/datafiles/leaderboard.txt", false);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
             PrintWriter output = new PrintWriter(bufferedWriter))
         {
@@ -291,9 +277,9 @@ public class BattleshipsGameMain {
         // play without GUI (can ignore when marking this project as GUI is fully working).
         }else{
             // Initialise player boards:
-            String gameFilePlayer1 = new String("src/gameSettingsPlayer1.txt");
-            String gameFilePlayer2 = new String("src/gameSettingsPlayer2.txt");
-            String playerScoreboardFile = new String("src/playerScoreboard.txt");
+            String gameFilePlayer1 = new String("src/datafiles/gameSettingsPlayer1.txt");
+            String gameFilePlayer2 = new String("src/datafiles/gameSettingsPlayer2.txt");
+            String playerScoreboardFile = new String("src/datafiles/playerScoreboard.txt");
 
             boolean boardSizeFromFile = false;
             int[] boardSizePlayer1;
