@@ -1,8 +1,10 @@
 # Battleships Game in Java
 Simple object oriented implementation of the game Battleships in Java done for a Java programming course. 
 
-Main menu:
+*Main menu:*
+
 ![alt text](https://github.com/V1cVan/battleships_game_java/blob/main/gifs/menu.gif)
 
-Play:
+*Play:*
+
 ![alt text](https://github.com/V1cVan/battleships_game_java/blob/main/gifs/play.gif)
