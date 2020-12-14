@@ -34,6 +34,7 @@ import java.util.SortedMap;
  *      who's turn it is during play, reading and writing the leaderboard textfile, determining who won the game,
  *      managing the operations associated with attacking a coordinate, and running the game/GUI.
  * The Battleships main class connects the frontend of the application to it's backend.
+ * All methods and variables in the battleships main class are static as there are not multiple instances of the game.
  */
 
 public class BattleshipsMain {
@@ -82,7 +83,7 @@ public class BattleshipsMain {
          */
 
         int[] shipPlacementFileErrors = new int[] {0,0}; // {errors in player 1 file, errors in player 2 file}
-        if (isPlaceShipsFromFile == true){               // Place ships from specified files
+        if (isPlaceShipsFromFile){               // Place ships from specified files
             shipPlacementFileErrors[0] = boardPlayerOne.readShipPlacementFile(playerOneFileName);
             shipPlacementFileErrors[1] = boardPlayerTwo.readShipPlacementFile(playerTwoFileName);
         }else{                                           // Place ships randomly
@@ -92,26 +93,26 @@ public class BattleshipsMain {
         return shipPlacementFileErrors;
     }
 
-    public double getPlayerOneScore(){
+    public static double getPlayerOneScore(){
         return playerOne.getScore();
     }
 
-    public double getPlayerTwoScore(){
+    public static double getPlayerTwoScore(){
         return playerTwo.getScore();
     }
 
-    public boolean getIsPlayerOnesTurn(){
+    public static boolean getIsPlayerOnesTurn(){
         return isPlayerOnesTurn;
     }
 
-    public void setIsPlayerOnesTurn(boolean isPlayerOneTurn){
+    public static void setIsPlayerOnesTurn(boolean isPlayerOneTurn){
         /*
          * Returns who's turn it is in the game. isPlayerOnesTurn == false if it is player 2's turn.
          */
         isPlayerOnesTurn = isPlayerOneTurn;
     }
 
-    public boolean getIsGameOver(){
+    public static boolean getIsGameOver(){
         /*
          * Returns the game's status corresponding to whether or not all the ships have been sunk on a board.
          */
@@ -176,7 +177,7 @@ public class BattleshipsMain {
         return isValidAttack;
     }
 
-    public char[][] getCurrentPlayerBoardChars(){
+    public static char[][] getCurrentPlayerBoardChars(){
         /*
          * Provides the current board representation as tensor of characters based on who's turn it is.
          * @param None
@@ -254,7 +255,7 @@ public class BattleshipsMain {
         return new int[] {boardDimension, boardDimension};
     }
 
-    private void loadLeaderboardFromFile(){
+    private static void loadLeaderboardFromFile(){
         /*
          * Reads the leaderboard text file into the locally defined leaderboard class variable.
          * @throws FileNotFoundException, IOException
@@ -276,7 +277,7 @@ public class BattleshipsMain {
         }
     }
 
-    public String getLeaderboard(){
+    public static String getLeaderboard(){
         /*
          * Returns a formatted string containing players on the games leaderboard.
          * @param None
@@ -299,13 +300,14 @@ public class BattleshipsMain {
         return leaderBoard;
     }
 
-    public void addWinnerToLeaderboard(String playerName){
+    public static void addWinnerToLeaderboard(String playerName){
         /*
          * Rewrites the leaderboard text file to include the new winner of the game just played.
          * If the winner's name already exists on the leaderboard his score is increased.
          * @param Player's name that just wont the game.
          * @return None
          */
+        loadLeaderboardFromFile();
 
         Set set = playersOnLeaderboard.entrySet();
         Iterator i = set.iterator();

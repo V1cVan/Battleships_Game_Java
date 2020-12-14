@@ -35,44 +35,16 @@ import javax.swing.ImageIcon;
 
 public class SettingsGui {
     // Splash screen elements on the window
-    private JFrame splashScreenFrame;
-    private JPanel informationPanel = new JPanel();
-    private JPanel optionsPanel = new JPanel();
-    private JPanel playerSettingsPanel = new JPanel();
-    private JPanel boardSizePanel = new JPanel();
-    private JPanel buttonsPanel = new JPanel();
-    private JPanel placeShipsPanel = new JPanel();
-    private JPanel startPanel = new JPanel();
-    private JPanel extrasPanel = new JPanel();
-
-    // Labels on splash screen:
-    private JLabel battleShipTitleLabel = new JLabel("Welcome to Battleships");
-    private JLabel splashInformationLabel = new JLabel("Please select your options and get started");
-    private JLabel imageLabel = new JLabel();
-    private JLabel playerOneNameLabel = new JLabel("Player 1 name:");
-    private JLabel playerTwoNameLabel = new JLabel("Player 2 name:");
-    private JLabel firstPlayerLabel = new JLabel("Player to go first:");
-    private JLabel boardInformationLabel = new JLabel("Choose the board size:");
-    private JLabel boardRowNumberLabel = new JLabel("  Rows",JLabel.LEFT);
-    private JLabel boardColumnNumberLabel = new JLabel("  Columns",JLabel.LEFT);
-
-    // Interactive elements on the splash screen
-    private JButton shipPlacementButton = new JButton("Choose Ship Placement");
-    private JCheckBox scoreCompensationButton = new JCheckBox("Score compensation for player going second?");
-    private JRadioButton firstPlayerRButton = new JRadioButton("Player 1");
-    private JRadioButton secondPlayerRButton = new JRadioButton("Player 2");
-    private JTextField playerOneNameBox = new JTextField();
-    private JTextField playerTwoNameBox = new JTextField();
-    private JButton startGameButton = new JButton("Start Game");
-    private JButton rulesButton = new JButton("Rules");
-    private JButton scoreboardButton = new JButton("High Scores");
-    private JButton exitButton = new JButton("Exit");
+    private final JFrame splashScreenFrame;
+    private final JCheckBox scoreCompensationButton = new JCheckBox("Score compensation for player going second?");
+    private final JRadioButton firstPlayerRButton = new JRadioButton("Player 1");
+    private final JRadioButton secondPlayerRButton = new JRadioButton("Player 2");
+    private final JTextField playerOneNameBox = new JTextField();
+    private final JTextField playerTwoNameBox = new JTextField();
     // Spinner values limited to ensure minimum space to place the largest ship
-    private SpinnerModel spinRowModel = new SpinnerNumberModel(8, 5, 15, 1);
-    private JSpinner numberRowsSpin = new JSpinner(spinRowModel);
-    private SpinnerModel spinColumnModel = new SpinnerNumberModel(8, 5, 15, 1);
-    private JSpinner numberColumnsSpin = new JSpinner(spinColumnModel);
-    
+    private final SpinnerModel spinRowModel = new SpinnerNumberModel(8, 5, 15, 1);
+    private final SpinnerModel spinColumnModel = new SpinnerNumberModel(8, 5, 15, 1);
+
     // Variables related to loading custom user defined ship placements
     private boolean isBoardSizeFromFile = false; // Set as true if user loads user defined ship placement files
     private String shipLayoutFileLayout1;        // Received from text fields for name of text files to load
@@ -89,50 +61,65 @@ public class SettingsGui {
         */
         splashScreenFrame = new JFrame("Battleship Game: selection screen");
 
-        // Set splash screen fonts
+        // Set splash screen labels and their fonts, along with the fonts of other splash screen elements.
+        JLabel battleShipTitleLabel = new JLabel("Welcome to Battleships");
         battleShipTitleLabel.setFont(new Font("", Font.BOLD, 30));
+        JLabel splashInformationLabel = new JLabel("Please select your options and get started");
         splashInformationLabel.setFont(new Font("", Font.PLAIN, 18));
+        JLabel boardInformationLabel = new JLabel("Choose the board size:");
         boardInformationLabel.setFont(new Font("", Font.BOLD, 16));
+        JLabel boardRowNumberLabel = new JLabel("  Rows", JLabel.LEFT);
         boardRowNumberLabel.setFont(new Font("", Font.PLAIN, 16));
+        JLabel boardColumnNumberLabel = new JLabel("  Columns", JLabel.LEFT);
         boardColumnNumberLabel.setFont(new Font("", Font.PLAIN, 16));
+        JLabel playerOneNameLabel = new JLabel("Player 1 name:");
         playerOneNameLabel.setFont(new Font("", Font.BOLD, 16));
         playerOneNameBox.setFont(new Font("", Font.PLAIN, 16));
+        JLabel playerTwoNameLabel = new JLabel("Player 2 name:");
         playerTwoNameLabel.setFont(new Font("", Font.BOLD, 16));
         playerTwoNameBox.setFont(new Font("", Font.PLAIN, 16));
+        JLabel firstPlayerLabel = new JLabel("Player to go first:");
         firstPlayerLabel.setFont(new Font("", Font.PLAIN, 16));
         firstPlayerRButton.setFont(new Font("", Font.PLAIN, 14));
         secondPlayerRButton.setFont(new Font("", Font.PLAIN, 14));
         scoreCompensationButton.setFont(new Font("", Font.PLAIN, 14));
+        JSpinner numberRowsSpin = new JSpinner(spinRowModel);
         numberRowsSpin.setFont(new Font("", Font.PLAIN, 14));
+        JSpinner numberColumnsSpin = new JSpinner(spinColumnModel);
         numberColumnsSpin.setFont(new Font("", Font.PLAIN, 14));
         scoreCompensationButton.setFont(new Font("", Font.PLAIN, 14));
+        JButton startGameButton = new JButton("Start Game");
         startGameButton.setFont(new Font("", Font.BOLD, 16));
 
         // (1) Set splash screen information panel items including Battleships heading and gif.
+        JPanel informationPanel = new JPanel();
         informationPanel.setBorder(BorderFactory.createEmptyBorder(10,30,10,30));
         informationPanel.setLayout(new BorderLayout());
         informationPanel.add(battleShipTitleLabel,BorderLayout.NORTH);
         battleShipTitleLabel.setHorizontalAlignment(0);
         informationPanel.add(splashInformationLabel,BorderLayout.CENTER);
         splashInformationLabel.setHorizontalAlignment(0);
-        ImageIcon battleshipImage = new ImageIcon(this.getClass().getResource("splash.gif")); 
+        ImageIcon battleshipImage = new ImageIcon(this.getClass().getResource("splash.gif"));
+        JLabel imageLabel = new JLabel();
         imageLabel.setIcon(battleshipImage);
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         informationPanel.add(imageLabel,BorderLayout.SOUTH);
 
         // (2) Splash screen game options panel for setting player names etc. and board sizes
+        JPanel optionsPanel = new JPanel();
         optionsPanel.setBorder(BorderFactory.createEmptyBorder(10,30,10,30));
         optionsPanel.setLayout(new GridLayout(1,2));
 
         // Player settings panel contains name fields, the player going first, and the score compensation checkbox
+        JPanel playerSettingsPanel = new JPanel();
         playerSettingsPanel.setBorder(BorderFactory.createEtchedBorder());
         playerSettingsPanel.setLayout(new GridLayout(8,1));
         playerSettingsPanel.add(playerOneNameLabel);
         playerSettingsPanel.add(playerOneNameBox);
-        playerOneNameBox.setText("Lecturer");
+        playerOneNameBox.setText("Lecturer");           // default text
         playerSettingsPanel.add(playerTwoNameLabel);
         playerSettingsPanel.add(playerTwoNameBox);
-        playerTwoNameBox.setText("Student");
+        playerTwoNameBox.setText("Student");            // default text
         playerSettingsPanel.add(firstPlayerLabel);
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(firstPlayerRButton);
@@ -144,6 +131,7 @@ public class SettingsGui {
         optionsPanel.add(playerSettingsPanel);  // add player settings to the game options panel
 
         // Splash screen board options panel (for setting board size)
+        JPanel boardSizePanel = new JPanel();
         boardSizePanel.setBorder(BorderFactory.createEtchedBorder());
         boardSizePanel.setLayout(new GridLayout(5,1));
         boardSizePanel.add(boardInformationLabel);
@@ -154,22 +142,31 @@ public class SettingsGui {
         optionsPanel.add(boardSizePanel);
 
         // (3) Splash screen buttons panel (game start button, game rules button, exit button etc.)
+        JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BorderLayout());
         buttonsPanel.setBorder(BorderFactory.createEmptyBorder(0,30,30,30));
+        // Interactive elements on the splash screen
+        JButton shipPlacementButton = new JButton("Choose Ship Placement");
         shipPlacementButton.setPreferredSize(new Dimension(615,40));
+        JPanel placeShipsPanel = new JPanel();
         placeShipsPanel.add(shipPlacementButton);
         buttonsPanel.add(placeShipsPanel, BorderLayout.NORTH);
         shipPlacementButton.addActionListener(new ShipPlacementActionListener());
 
+        JPanel startPanel = new JPanel();
         startPanel.add(startGameButton);
         startGameButton.setPreferredSize(new Dimension(615,100));
         buttonsPanel.add(startPanel,BorderLayout.CENTER);
         startGameButton.addActionListener(new StartButtonActionListener());
 
+        JPanel extrasPanel = new JPanel();
+        JButton rulesButton = new JButton("Rules");
         extrasPanel.add(rulesButton, BorderLayout.LINE_START);
         rulesButton.setPreferredSize(new Dimension(200,50));
+        JButton scoreboardButton = new JButton("High Scores");
         extrasPanel.add(scoreboardButton, BorderLayout.CENTER);
         scoreboardButton.setPreferredSize(new Dimension(200,50));
+        JButton exitButton = new JButton("Exit");
         extrasPanel.add(exitButton, BorderLayout.LINE_END);
         exitButton.setPreferredSize(new Dimension(200,50));
         rulesButton.addActionListener(new GameRulesActionListener());
@@ -223,9 +220,9 @@ public class SettingsGui {
         @Override
         public void actionPerformed(ActionEvent e) {
             // gameMain instantiation for displaying the leaderboard
-            BattleshipsMain gameMain = new BattleshipsMain();
+
             // Get leaderboard in String format for displaying
-            String leaderboard = gameMain.getLeaderboard();
+            String leaderboard = new BattleshipsMain().getLeaderboard();
             JOptionPane.showMessageDialog(splashScreenFrame,
                     "Local Battleships Scoreboard:\n\n" +
                             leaderboard,
@@ -258,23 +255,21 @@ public class SettingsGui {
             boolean playerOneDisadvantage = false;
             boolean playerTwoDisadvantage = false;
             boolean isPlayerOneFirst = true;
-            if (firstPlayerRButton.isSelected() == true){           // Receives value from radiobutton
-                isPlayerOneFirst = true;
+            if (firstPlayerRButton.isSelected()){           // Receives value from radiobutton
                 if (scoreCompensationButton.isSelected()){          // Receives value from checkbox
                     playerOneDisadvantage = true;
                     playerTwoDisadvantage = false;
                 }
-            }else if (secondPlayerRButton.isSelected() == true) {   // Receives value from radiobutton
+            }else if (secondPlayerRButton.isSelected()) {   // Receives value from radiobutton
                 isPlayerOneFirst = false;
                 if (scoreCompensationButton.isSelected()){          // Receives value from checkbox
-                    playerOneDisadvantage = false;
                     playerTwoDisadvantage = true;
                 }
             }
             int[] boardSizePlayerTwo;
             int[] boardSizePlayerOne;
             // If custom user defined ship placement files were not loaded, board sizes are received from spinners
-            if (isBoardSizeFromFile == false){
+            if (!isBoardSizeFromFile){
                 int numRows = (Integer) spinRowModel.getValue();
                 int numColumns = (Integer) spinColumnModel.getValue();
                 boardSizePlayerOne = new int[] {numRows,numColumns};
@@ -307,14 +302,14 @@ public class SettingsGui {
 
         // Define elements on the ship placements window
         private JFrame boatLayoutFrame;
-        private JPanel player1Panel = new JPanel();
-        private JPanel player2Panel = new JPanel();
-        private JLabel player1Label = new JLabel("Player 1 boat layout file name:");
-        private JLabel player2Label = new JLabel("Player 2 boat layout file name:");
-        private JTextField player1PlacementField = new JTextField();
-        private JTextField player2PlacementField = new JTextField();
-        private JButton confirmPlacementButton = new JButton("Load ship placement file");
-        private JButton closeButton = new JButton("Close");
+        private final JPanel player1Panel = new JPanel();
+        private final JPanel player2Panel = new JPanel();
+        private final JLabel player1Label = new JLabel("Player 1 boat layout file name:");
+        private final JLabel player2Label = new JLabel("Player 2 boat layout file name:");
+        private final JTextField player1PlacementField = new JTextField();
+        private final JTextField player2PlacementField = new JTextField();
+        private final JButton confirmPlacementButton = new JButton("Load ship placement file");
+        private final JButton closeButton = new JButton("Close");
 
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -345,13 +340,11 @@ public class SettingsGui {
             player2PlacementField.setFont(new Font("",Font.PLAIN,15));
             player2Panel.add(closeButton);
             // Basic action listener for closing the window
-            closeButton.addActionListener(new ActionListener() {
-                    public void actionPerformed (ActionEvent event){
-                        boatLayoutFrame.dispose();
-                        splashScreenFrame.setEnabled(true);             // re-enable the splash screen
-                        splashScreenFrame.setVisible(true);             // Bring splash screen to the foreground again
-                    }
-                }
+            closeButton.addActionListener(event -> {
+                boatLayoutFrame.dispose();
+                splashScreenFrame.setEnabled(true);             // re-enable the splash screen
+                splashScreenFrame.setVisible(true);             // Bring splash screen to the foreground again
+            }
             ); // end of addActionListener method for the exit button
             closeButton.setPreferredSize(new Dimension(150,20));
             boatLayoutFrame.add(player1Panel);
