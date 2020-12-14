@@ -14,14 +14,6 @@ import java.util.*;
 import java.lang.Thread;
 import java.util.SortedMap;
 
-// TODO class comments
-// TODO method comments
-// TODO code comments
-// TODO cleanup of unused variables
-// TODO ensure privately used methods are declared as private
-// TODO switch to final variables
-// TODO intellij problems
-
 /*
  * The game of Battleships.
  * @author  Victor van Wymeersch - R0690930
