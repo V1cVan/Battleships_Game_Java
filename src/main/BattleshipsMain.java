@@ -21,7 +21,7 @@ import java.util.SortedMap;
  */
 
 /**
- * The abstract BattleshipsMain handles the main functionality of the game during play.
+ * The BattleshipsMain handles the main functionality of the game during play.
  * It is responsible for handling each of the player objects and their corresponding board objects,
  *      who's turn it is during play, reading and writing the leaderboard textfile, determining who won the game,
  *      managing the operations associated with attacking a coordinate, and running the game/GUI.
@@ -29,7 +29,7 @@ import java.util.SortedMap;
  * All methods and variables in the battleships main class are static as there are not multiple instances of the game.
  */
 
-public abstract class BattleshipsMain {
+public class BattleshipsMain {
     // Game objects during play
     private static Board boardPlayerOne;
     private static Board boardPlayerTwo;
