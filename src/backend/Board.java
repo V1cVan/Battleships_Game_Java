@@ -110,9 +110,10 @@ public class Board {
         // Check if a ship placement overlaps with another ship's placement
         if (placedShips != null) {                          // Only check if another ship has already been paced
             for (Ship ship : placedShips) {                 // Loop through each placed ship
-                for (int[] i : ship.getShipCoordinates()){  // Loop through each ship's coordinates
-                    for (int[] j : coordinates){
-                        if (i[0]==j[0] & i[1]==j[1]) {      // Check if ships have the same defined coordinates
+                for (int[] placedCoords : ship.getShipCoordinates()){  // Loop through each ship's coordinates
+                    for (int[] newCoords : coordinates){
+                        // Check if the new ship has the same defined coordinates as already placed ships
+                        if (placedCoords[0]==newCoords[0] & placedCoords[1]==newCoords[1]) {
                             return isValid = false;
                         }
                     }
@@ -125,9 +126,12 @@ public class Board {
             int[] currLoc = coordinates[i];
             int[] nextLoc = coordinates[i+1];
             // If the x- or y-coordinates of a ship are more than 1 space apart the ship is discontinuous
-            if ((Math.abs(currLoc[0] - nextLoc[0]) != 1 | Math.abs(currLoc[1] - nextLoc[1]) != 1) == false){
-                return isValid = false;
+            boolean continuousX = Math.abs(currLoc[0] - nextLoc[0]) == 1;
+            boolean continuousY = Math.abs(currLoc[1] - nextLoc[1]) == 1;
+            if (!continuousX | !continuousY){
+                return false;
             }
+
         }
 
         return isValid;
