@@ -222,7 +222,7 @@ public class SettingsGui {
             // gameMain instantiation for displaying the leaderboard
 
             // Get leaderboard in String format for displaying
-            String leaderboard = new BattleshipsMain().getLeaderboard();
+            String leaderboard = BattleshipsMain.getLeaderboard();
             JOptionPane.showMessageDialog(splashScreenFrame,
                     "Local Battleships Scoreboard:\n\n" +
                             leaderboard,
