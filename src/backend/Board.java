@@ -126,12 +126,11 @@ public class Board {
             int[] currLoc = coordinates[i];
             int[] nextLoc = coordinates[i+1];
             // If the x- or y-coordinates of a ship are more than 1 space apart the ship is discontinuous
-            boolean continuousX = Math.abs(currLoc[0] - nextLoc[0]) == 1;
-            boolean continuousY = Math.abs(currLoc[1] - nextLoc[1]) == 1;
-            if (!continuousX | !continuousY){
-                return false;
+            boolean continuousX = Math.abs(currLoc[0] - nextLoc[0]) != 1;
+            boolean continuousY = Math.abs(currLoc[1] - nextLoc[1]) != 1;
+            if ((continuousX | continuousY) == false){
+                return isValid = false;
             }
-
         }
 
         return isValid;
