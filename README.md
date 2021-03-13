@@ -1,5 +1,5 @@
 # Battleships Game in Java
-Simple object oriented implementation of the game Battleships in Java done for a Java programming course. 
+Simple object oriented implementation of the game Battleships in Java. 
 
 *Main menu:*
 
